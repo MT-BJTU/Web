@@ -27,7 +27,7 @@ public class Schedule {
     @Value("root")
     private String dbServerUsername;
 
-    @Value("172.24.65.47")
+    @Value("8.130.76.6")
     private String dbServerHostname;
 
     @Scheduled(cron = "0 0 18 * * ?")
@@ -42,7 +42,7 @@ public class Schedule {
         //拼接备份命令
         StringBuilder sb = new StringBuilder();
         Map<String, String> dbInfo = jdbcUtils.getDBInfo();
-        sb.append("sshpass -p '").append("123456").append("' ssh ")
+        sb.append("sshpass -p '").append("GC20011228sh!").append("' ssh ")
                 .append(dbServerUsername)
                 .append("@")
                 .append(dbServerHostname)
