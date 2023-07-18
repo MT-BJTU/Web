@@ -1,0 +1,29 @@
+server:
+  port: 9000
+  resource: /root/resource
+
+spring:
+  datasource:
+    name: Forum_database
+    url: jdbc:mysql://172.24.65.47:3306/Forum_database
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+#操作oss需要的一些参数
+aliyun:
+  accessKeyId:        # 阿里云的accessKeyId
+  secretAccessKey:   # accessKey 密码
+  oss:
+    endPoint: oss-cn-hangzhou.aliyuncs.com     # Endpoint:在阿里云oss控制台查看自己使用的endpoint
+    bucketName: scott-gc   # bucket 名称
+
+#MyBatis-Plus配置
+#mybatis-plus:
+  #configuration:
+    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+#logging:
+  #level:
+   # com.baomidou.mybatisplus.core: DEBUG
+
