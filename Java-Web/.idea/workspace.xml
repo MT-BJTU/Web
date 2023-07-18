@@ -5,7 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="849dc580-57b5-4317-bc3e-6e009c64b9bc" name="变更" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/Java-Web.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Vue/src/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/../Vue/src/main.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,11 +39,22 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
     "spring.configuration.checksum": "d1d90562897098fa3730fb381ab60ede",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Spring Boot.CurriculumDesignApplication">
+    <configuration name="CurriculumDesignApplication (1)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <module name="Java-Web" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.CurriculumDesignApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="CurriculumDesignApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
       <module name="CurriculumDesign" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.CurriculumDesignApplication" />
@@ -60,6 +73,7 @@
       <updated>1689672759804</updated>
       <workItem from="1689672764589" duration="26000" />
       <workItem from="1689674379276" duration="95000" />
+      <workItem from="1689676408811" duration="491000" />
     </task>
     <servers />
   </component>

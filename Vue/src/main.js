@@ -6,7 +6,7 @@ import router from './router'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 var axios = require('axios')
-axios.defaults.baseURL = 'http://172.24.65.59:9000/api'
+axios.defaults.baseURL = 'http://localhost:9000/api'
 // 绑定到全局
 Vue.prototype.$axios = axios
 
