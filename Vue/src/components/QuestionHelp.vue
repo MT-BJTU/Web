@@ -36,7 +36,7 @@
       title="提出问题"
       :visible.sync="dialogVisible"
       :close-on-click-modal="false"
-      :show-close="false"
+      :show-close="ture"
     >
       <el-form ref="questionForm" :model="newQuestion" label-width="80px">
         <el-form-item label="问题标题" required>
@@ -123,7 +123,8 @@ export default {
         title: this.newQuestion.title,
         description: this.newQuestion.description,
       };
-
+      this.newQuestion.title = '';
+      this.newQuestion.description = '';
       // 发送 POST 请求将问题提交到服务器
       this.$axios
         .post('/submit-question', questionData)
