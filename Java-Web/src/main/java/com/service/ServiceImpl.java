@@ -29,6 +29,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @org.springframework.stereotype.Service
@@ -181,28 +183,6 @@ public class ServiceImpl implements Service {
         List<QuestionView> questionList=questionViewMapper.selectList(queryWrapper);
         return   ResponseResult.success(questionList);
     }
-    /*
-    @Override
-    public ResponseResult<?>showMyQues(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = null;
-        if (authentication != null && authentication.getPrincipal() instanceof DetailedUser) {
-            DetailedUser detailedUser = (DetailedUser) authentication.getPrincipal();
-            userId = detailedUser.getUserId();
-        }
-        QueryWrapper<Question> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("UserID", userId);
-        List<Question> questionList=questionMapper.selectList(queryWrapper);
-        for (Question question : questionList) {
-            // 根据问题中的用户ID查询对应的用户信息
-            User user = userMapper.selectById(question.getUserID());
-            // 将查询到的用户信息设置到问题对象中
-            question.setUser(user);
-        }
-        Collections.sort(questionList, Comparator.comparing(Question::getTime).reversed());
-        return ResponseResult.success(questionList);
-    }
-*/
     @Override
     public ResponseResult<?>showMyQues(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -217,7 +197,7 @@ public class ServiceImpl implements Service {
         Collections.sort(questionList, Comparator.comparing(QuestionView::getTime).reversed());
         return ResponseResult.success(questionList);
     }
-/*
+
     @Override
     public ResponseResult<?> saveQuestion(QuestionRequestDto questionRequest){
         try {
@@ -247,26 +227,6 @@ public class ServiceImpl implements Service {
             // 处理异常情况，并返回错误响应
             return new ResponseResult<>(500, "问题提交失败");
         }
-    }*/
-    @Override
-    public ResponseResult<?> saveQuestion(QuestionRequestDto questionRequest) {
-            try {
-                String procedureName = "saveQuestion";
-
-                SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
-                        .withProcedureName(procedureName);
-
-                MapSqlParameterSource inParams = new MapSqlParameterSource()
-                        .addValue("p_title", questionRequest.getTitle())
-                        .addValue("p_description", questionRequest.getDescription())
-                        .addValue("p_userID", getUserId());
-                jdbcCall.execute(inParams);
-                // 返回成功响应
-                return new ResponseResult<>(200, "问题提交成功！");
-            } catch (Exception e) {
-                // 处理异常情况，并返回错误响应
-                return new ResponseResult<>(500, "问题提交失败");
-            }
     }
 
     private Long getUserId() {
@@ -301,7 +261,6 @@ public class ServiceImpl implements Service {
         try {
             List<Answer> answerList = answerMapper.selectByQueId(questionId);
             for (Answer answer : answerList) {
-                System.out.println(answer);
                 // 根据问题中的用户ID查询对应的用户信息
                 User user = userMapper.selectById(answer.getUserID());
                 // 将查询到的用户信息设置到问题对象中

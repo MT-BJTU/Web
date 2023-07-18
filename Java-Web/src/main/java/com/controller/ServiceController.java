@@ -38,7 +38,6 @@ public class ServiceController {
 
     @GetMapping("/user/profile")
     public ResponseResult<?> profile() {
-        System.out.println("XXXXX");
         return service.profile();
     }
 
@@ -73,7 +72,6 @@ public class ServiceController {
     }
     @PostMapping("questions/{questionId}/postanswers")
     public ResponseResult<?> submitAnswer(@PathVariable("questionId")Long questionId,@RequestBody Answer answer) {
-        System.out.println(answer.getContent());
         return  service.submitAnswer(questionId, answer);
     }
     @DeleteMapping("/questions/{questionId}")
