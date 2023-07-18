@@ -1,5 +1,5 @@
-Vue/src/main.js
+#Vue/src/main.js
 Vue/dist
-#Java-Web/src/main/resources/application.yml
+Java-Web/src/main/resources/application.yml
 Java-Web/.idea/workspace.xml
 Java-Web/.mvn
