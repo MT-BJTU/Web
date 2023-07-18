@@ -12,8 +12,8 @@ spring:
 
 #操作oss需要的一些参数
 aliyun:
-  accessKeyId: LTAI5t7Z7N2WvVGbJ2ftPSWY       # 阿里云的accessKeyId
-  secretAccessKey: TNLk9Q10CE8eKEzLQP1k0pxQrIFB9b   # accessKey 密码
+  accessKeyId:        # 阿里云的accessKeyId
+  secretAccessKey:   # accessKey 密码
   oss:
     endPoint: oss-cn-hangzhou.aliyuncs.com     # Endpoint:在阿里云oss控制台查看自己使用的endpoint
     bucketName: scott-gc   # bucket 名称
