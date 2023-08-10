@@ -67,14 +67,8 @@ export default {
     },
     logout() {
       this.$axios.get('/logout')
-    .then(() => {
       localStorage.removeItem('token');
-      // 跳转到登录页面
       this.$router.push('/login');
-    })
-    .catch(error => {
-      console.error('登出失败', error);
-    });
     },
     navigateTo(page) {
       if (page === '技术讨论') {
