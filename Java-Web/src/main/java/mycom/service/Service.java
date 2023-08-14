@@ -1,0 +1,27 @@
+package mycom.service;
+
+import mycom.ActionResult.ResponseResult;
+import com.aliyuncs.ram.model.v20150501.ChangePasswordRequest;
+import mycom.bean.Answer;
+import mycom.bean.User;
+import mycom.model.QuestionRequestDto;
+
+public interface Service {
+     ResponseResult<?> login(User user);
+     void logout();
+     ResponseResult<?> register(User user);
+
+     ResponseResult<?> profile();
+
+    ResponseResult<?> save(User user);
+
+    ResponseResult<?> changePassword(ChangePasswordRequest request);
+    ResponseResult<?> showQues();
+    ResponseResult<?>showMyQues();
+    ResponseResult<?> saveQuestion(QuestionRequestDto questionRequest);
+
+    ResponseResult<?> getQuestion(Long questionId);
+    ResponseResult<?>getAnswersByQuestionId(Long questionId);
+    ResponseResult<?>submitAnswer(Long questionId, Answer answer);
+    ResponseResult<?>deleteQuestion(Long questionId);
+}
