@@ -7,7 +7,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
 @SpringBootApplication
-@MapperScan("com.mapper")
+@MapperScan("mycom.mapper")
 public class CurriculumDesignApplication {
 
     public static void main(String[] args) {
