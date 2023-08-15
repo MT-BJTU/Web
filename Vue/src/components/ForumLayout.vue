@@ -12,7 +12,6 @@
           </template>
           <el-menu-item index="1-1" @click="navigateTo('问题求助')">问题求助</el-menu-item>
           <el-menu-item index="1-2" @click="navigateTo('技术讨论')">技术讨论</el-menu-item>
-          <el-menu-item index="1-3" @click="navigateTo('资源分享')">资源分享</el-menu-item>
         </el-submenu>
         <el-submenu index="2">
           <template slot="title">
@@ -20,9 +19,10 @@
             <span>个人中心</span>
           </template>
           <el-menu-item index="2-1" @click="navigateTo('我的问题')">我的问题</el-menu-item>
-          <el-menu-item index="2-2" @click="navigateTo('我的收藏')">我的收藏</el-menu-item>
-          <el-menu-item index="2-3" @click="navigateTo('我的文章')">我的文章</el-menu-item>
-          <el-menu-item index="2-4" @click="navigateTo('个人设置')">个人设置</el-menu-item>
+          <el-menu-item index="2-2" @click="navigateTo('我的关注')">我的关注</el-menu-item>
+          <el-menu-item index="2-3" @click="navigateTo('我的收藏')">我的收藏</el-menu-item>
+          <el-menu-item index="2-4" @click="navigateTo('我的文章')">我的文章</el-menu-item>
+          <el-menu-item index="2-5" @click="navigateTo('个人设置')">个人设置</el-menu-item>
         </el-submenu>
         <el-menu-item index="3" @click="logout">
           <i class="el-icon-switch-button"></i>
@@ -73,8 +73,6 @@ export default {
     navigateTo(page) {
       if (page === '技术讨论') {
         this.$router.push('/techDiscussion');
-      } else if (page === '资源分享') {
-        this.$router.push('/resource-sharing');
       } else if (page === '问题求助') {
         this.$router.push('/');
       } else if (page === '我的问题') {
