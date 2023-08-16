@@ -44,7 +44,6 @@ public class DetailedUser implements UserDetails {
         return authorities;
     }
 
-    // Implement the remaining methods from the UserDetails interface
 
     @Override
     public boolean isAccountNonExpired() {

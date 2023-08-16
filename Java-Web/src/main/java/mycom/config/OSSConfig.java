@@ -122,10 +122,6 @@ public class OSSConfig {
 
         // 创建OSSClient实例。
         OSS ossClient = new OSSClientBuilder().build(endPoint, accessKeyId, secretAccessKey);
-        /** oss删除文件是根据文件完成路径删除的，但文件完整路径中不能包含Bucket名称。
-         * 比如文件路径为：http://edu-czf.oss-cn-guangzhou.aliyuncs.com/2022/08/abc.jpg",
-         * 则完整路径就是：2022/08/abc.jpg
-         */
         int begin = ("http://" + bucketName + "." + endPoint + "/").length(); //找到文件路径的开始下标
         String deleteUrl = fileUrl.substring(begin);
 
