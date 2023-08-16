@@ -68,8 +68,28 @@ export default {
       this.$router.push('/register');
     },
     guestLogin() {
-      // 游客登录逻辑...
+      this.loginLoading = true;
+      const guestData = {
+        userName: 'guest', 
+        password: 'guest'  
+      };
+      this.$axios.post('/login', guestData)
+        .then(response => {
+          if (response.data.code === 200) {
+            this.loginLoading = false;
+            localStorage.setItem('token', response.data.data.token);
+            this.$router.push('/');
+          } else {
+            localStorage.removeItem('token');
+            this.loginLoading = false;
+          }
+        })
+        .catch(error => {
+          this.loginLoading = false;
+          this.$message('网络故障');
+        });
     }
+
   }
 };
 </script>

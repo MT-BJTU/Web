@@ -168,7 +168,7 @@ export default {
         .post(`questions/${questionId}/postanswers`, Answer)
         .then((response) => {
           this.showAnswerForm = false;
-          this.$message.success('回答提交成功');
+          this.$message(response.data.msg);
           this.fetchAnswers(); // Fetch updated answers after submitting
         })
         .catch((error) => {
@@ -188,8 +188,12 @@ export default {
     this.$axios
       .post(`/answers/${answer.answerID}/like`)
       .then((response) => {
+        if(response.data.code===500)
+        this.$message(response.data.msg);
+      else{
         answer.liked = true;
         answer.likes++;
+        }
       })
       .catch((error) => {
         console.error('Failed to like answer:', error);
@@ -200,8 +204,12 @@ export default {
     this.$axios
       .post(`/answers/${answer.answerID}/unlike`)
       .then((response) => {
+        if(response.data.code===500)
+        this.$message(response.data.msg);
+      else{
         answer.liked = false;
         answer.likes--;
+      }
       })
       .catch((error) => {
         console.error('Failed to unlike answer:', error);

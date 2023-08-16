@@ -17,9 +17,7 @@ import mycom.mapper.UserMapper;
 import mycom.model.DetailedUser;
 import mycom.model.QuestionRequestDto;
 import mycom.utils.JwtUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -33,7 +31,6 @@ import java.util.*;
 
 @org.springframework.stereotype.Service
 public class ServiceImpl implements Service {
-    private final JdbcTemplate jdbcTemplate;
     @Autowired
     private UserMapper userMapper;
 
@@ -47,23 +44,19 @@ public class ServiceImpl implements Service {
 
     @Autowired
     private AuthenticationManager authenticationManager;
-    @Autowired
-    private HttpServletRequest request;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
     private OSSConfig oss;
 
-    public ServiceImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public ResponseResult<?> login(User user) {
         // 通过UsernamePasswordAuthenticationToken获取用户名和密码
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 user.getUserName(), user.getPassword());
+        System.out.println(user.getUserName());
         // AuthenticationManager委托机制对authenticationToken 进行用户认证
         Authentication authenticate = null;
         try {
@@ -120,6 +113,7 @@ public class ServiceImpl implements Service {
     public ResponseResult<?> save(User user){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
+        if(!username.equals("guest")){
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getUserName,user.getUserName());
         User old = userMapper.selectOne(queryWrapper);
@@ -151,11 +145,15 @@ public class ServiceImpl implements Service {
         }
         else
             return new ResponseResult<>(500, "用户名已有");
+        }
+        else
+            return new ResponseResult<>(500, "游客请登陆");
     }
     @Override
     public ResponseResult<?> changePassword(ChangePasswordRequest request){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
+        if(!username.equals("guest")){
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getUserName,username);
         User user = userMapper.selectOne(queryWrapper);
@@ -173,6 +171,8 @@ public class ServiceImpl implements Service {
                 return new ResponseResult<>(500, "修改失败");
             }
         }
+        }else
+            return new ResponseResult<>(500, "游客请登陆");
     }
 
     @Override
@@ -210,6 +210,7 @@ public class ServiceImpl implements Service {
                 DetailedUser detailedUser = (DetailedUser) authentication.getPrincipal();
                 userId = detailedUser.getUserId();
             }
+            if(userId!=0){
             question.setAnswers(0);
             question.setUserID(userId);
             // 获取当前时间并格式化为字符串
@@ -221,20 +222,13 @@ public class ServiceImpl implements Service {
             // 执行保存操作，例如调用 questionMapper 的插入方法
             questionMapper.insert(question);
             // 返回成功响应
-            return new ResponseResult<>(200, "问题提交成功！");
+            return new ResponseResult<>(200, "问题提交成功！");}
+            else
+                return new ResponseResult<>(500, "游客请登陆");
         } catch (Exception e) {
             // 处理异常情况，并返回错误响应
             return new ResponseResult<>(500, "问题提交失败");
         }
-    }
-
-    private Long getUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof DetailedUser) {
-            DetailedUser detailedUser = (DetailedUser) authentication.getPrincipal();
-            return detailedUser.getUserId();
-        }
-        return null;
     }
 
 
@@ -284,12 +278,16 @@ public class ServiceImpl implements Service {
                 DetailedUser detailedUser = (DetailedUser) authentication.getPrincipal();
                 userId = detailedUser.getUserId();
             }
+            if(userId!=0){
             answer.setUserID(userId);
             answer.setReleaseTime(newAns.getReleaseTime());
             // 执行保存操作，例如调用 questionMapper 的插入方法
             answerMapper.insert(answer);
             // 返回成功响应
             return new ResponseResult<>(200, "回答提交成功！");
+            }
+            else
+                return new ResponseResult<>(500, "游客请登陆");
         } catch (Exception e) {
             // 处理异常情况，并返回错误响应
             return new ResponseResult<>(500, "回答提交失败");
@@ -313,7 +311,6 @@ public class ServiceImpl implements Service {
         // Retrieve answer and user information from the database
         Answer answer = answerMapper.selectById(answerId);
         User user = userMapper.selectById(userId);
-
         if (answer != null && user != null) {
             // Check if the user has already liked the answer
             List<Long> likedUserIds = answer.getLikedUserIds();

@@ -82,8 +82,12 @@ public class ServiceController {
     public ResponseResult<?> likeAnswer(@PathVariable("answerId") Long answerId) {
         try {
             Long userId = getUserId();
+            if(userId!=0){
             service.likeAnswer(answerId, userId);
             return ResponseResult.success("Answer liked successfully");
+            }
+            else
+                return new ResponseResult<>(500, "游客请登陆");
         } catch (Exception e) {
             return ResponseResult.error();
         }
@@ -93,8 +97,12 @@ public class ServiceController {
     public ResponseResult<?> unlikeAnswer(@PathVariable("answerId") Long answerId) {
         try {
             Long userId = getUserId();
+            if(userId!=0){
             service.unlikeAnswer(answerId, userId);
             return ResponseResult.success("Answer unliked successfully");
+            }
+            else
+                return new ResponseResult<>(500, "游客请登陆");
         } catch (Exception e) {
             return ResponseResult.error();
         }
