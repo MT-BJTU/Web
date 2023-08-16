@@ -117,7 +117,7 @@ public class ServiceImpl implements Service {
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(User::getUserName,user.getUserName());
         User old = userMapper.selectOne(queryWrapper);
-        if(old==null){
+        if(old==null||old.getUserName().equals(username)){
         queryWrapper.eq(User::getUserName,username);
         User now = userMapper.selectOne(queryWrapper);
         now.setUserName(user.getUserName());
