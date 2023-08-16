@@ -24,6 +24,26 @@ axios.interceptors.request.use(
   }
 );
 
+axios.interceptors.response.use(
+  response => {
+    return response;
+  },
+  error => {
+    if (error.response && error.response.status === 401) {
+      // 清除本地存储的 token
+      localStorage.removeItem('token');
+      // 跳转到登录页或显示错误提示
+      ElementUI.MessageBox.alert(error.response.data.msg||'认证失败,请重新登录', '提示', {
+        confirmButtonText: '确定',
+        callback: () => {
+          // 跳转到登录页
+          router.push('/login');
+        }
+      });
+    }
+    return Promise.reject(error);
+  }
+);
 
 Vue.config.productionTip = false
 Vue.use(ElementUI)
