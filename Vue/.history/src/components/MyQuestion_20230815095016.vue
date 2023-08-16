@@ -1,10 +1,9 @@
 <template>
   <div class="question-list">
-    <el-card
+    <div
       v-for="question in displayedQuestions"
       :key="question.questionId"
       :class="['question-card', getRandomColor()]"
-      @click.stop="navigateToAnswers(question.questionId)"
     >
       <!-- 问题卡片的内容 -->
       <div class="question-avatar-username">
@@ -18,38 +17,16 @@
         <div class="question-description">{{ question.description }}</div>
         <div class="question-actions">
           <div class="question-actions-left">
-            <el-badge :value="question.answers" >
-              <el-button type="text" icon="el-icon-edit" class="answer-button" @click.stop="navigateToAnswers(question.questionId)"></el-button>
-            </el-badge>
+            <el-button type="text" icon="el-icon-edit" class="answer-button" @click.stop="navigateToAnswers(question.questionId)"></el-button>
             <span class="question-answers">{{ question.answers }} 回答</span>
           </div>
           <div class="question-actions-right">
             <span class="question-time">发布时间: {{ question.time }}</span>
+            <i class="el-icon-delete delete-icon" @click.stop="deleteQuestion(question.questionId)"></i>
           </div>
         </div>
       </div>
-    </el-card>
-
-    <el-button type="primary" @click="showQuestionDialog" class="ask-button">我要提问</el-button>
-
-    <el-dialog
-      title="提出问题"
-      :visible.sync="dialogVisible"
-      :close-on-click-modal="false"
-      :show-close="ture"
-    >
-      <el-form ref="questionForm" :model="newQuestion" label-width="80px">
-        <el-form-item label="问题标题" required>
-          <el-input v-model="newQuestion.title" autocomplete="off" placeholder="请输入问题标题"></el-input>
-        </el-form-item>
-        <el-form-item label="问题详细描述" required>
-          <el-input v-model="newQuestion.description" type="textarea" rows="4" placeholder="请输入问题详细描述"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="submitQuestion">提交</el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
+    </div>
 
     <el-pagination
       :current-page="currentPage"
@@ -62,11 +39,7 @@
 </template>
 
 <script>
-import { ElBadge } from 'element-ui';
 export default {
-  components: {
-    'el-badge': ElBadge,
-  },
   data() {
     return {
       questions: [
@@ -83,11 +56,6 @@ export default {
       ],
       currentPage: 1,
       pageSize: 5,
-      dialogVisible: false,
-      newQuestion: {
-        title: '',
-        description: '',
-      },
     };
   },
   computed: {
@@ -114,58 +82,25 @@ export default {
     handlePageChange(currentPage) {
       this.currentPage = currentPage;
     },
-    showQuestionDialog() {
-      this.dialogVisible = true;
-    },
-    submitQuestion() {
-      // 构造问题对象
-      const questionData = {
-        title: this.newQuestion.title,
-        description: this.newQuestion.description,
-      };
-      this.newQuestion.title = '';
-      this.newQuestion.description = '';
-      // 发送 POST 请求将问题提交到服务器
+    deleteQuestion(questionId) {
+      // 发送删除问题的请求，并更新列表
       this.$axios
-        .post('/submit-question', questionData)
+        .delete(`/questions/${questionId}`)
         .then((response) => {
-          // 提交成功的处理逻辑
-          console.log('问题提交成功:', response.data);
-
-          // 刷新问题列表，重新获取问题数据
-          this.$axios
-            .get('/questions')
-            .then((response) => {
-              this.questions = response.data.data;
-              this.questions.forEach((question) => {
-                if (!question.avatar) {
-                  question.avatar =
-                    'https://scott-gc.oss-cn-hangzhou.aliyuncs.com/img/202306041932702.png';
-                }
-              });
-            })
-            .catch((error) => {
-              console.error('获取问题列表失败:', error);
-            });
-
-          // 给出成功提示
-          this.$message(response.data.msg);
+          // 根据返回的结果进行处理，比如更新列表或显示提示信息
+          this.questions = this.questions.filter((question) => question.questionId !== questionId);
+          this.$message.success('问题删除成功！');
         })
         .catch((error) => {
-          // 提交失败的处理逻辑
-          console.error('问题提交失败:', error);
-          this.$message.error('问题提交失败，请重试！');
-        })
-        .finally(() => {
-          // 关闭对话框
-          this.dialogVisible = false;
+          console.error('删除问题失败:', error);
+          this.$message.error('问题删除失败！');
         });
     },
   },
   created() {
     // 组件加载时发送请求获取问题列表
     this.$axios
-      .get('/questions')
+      .get('/myquestions')
       .then((response) => {
         this.questions = response.data.data;
         // 设置默认头像
@@ -195,6 +130,8 @@ export default {
   padding: 20px;
   color: black;
   position: relative;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .question-avatar-username {
@@ -202,7 +139,7 @@ export default {
   top: 10px;
   left: 10px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .question-user-avatar {
@@ -229,6 +166,7 @@ export default {
 
 .question-description {
   margin-bottom: 10px;
+  line-height: 1.5;
 }
 
 .question-actions {
@@ -253,19 +191,14 @@ export default {
   color: #666;
 }
 
-.el-button {
-  margin-top: 10px;
-}
-
-.ask-button {
-  position: fixed;
-  right: 20px;
-  bottom: 20px;
-  z-index: 9999;
-}
-
 .answer-button {
   font-size: 18px !important;
+}
+
+.delete-icon {
+  color: red;
+  font-size: 18px;
+  cursor: pointer;
 }
 
 .question-color-1 {
@@ -286,5 +219,10 @@ export default {
 
 .question-color-5 {
   background-color: #f0f0f5;
+}
+
+/* 移除小红点样式 */
+.el-badge .el-badge__content {
+  display: none;
 }
 </style>

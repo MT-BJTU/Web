@@ -22,19 +22,16 @@
           <p>{{ answer.content }}</p>
           <div class="answer-info">
             <span class="answer-time">{{ answer.releaseTime }}</span>
-            <button
-              class="like-button"
-              :class="{ liked: answer.liked }"
-              @click="toggleLike(answer)"
-            >
-              👍 {{ answer.likes }}
-            </button>
+            <div class="like-button-container">
+              <el-button type="text" @click="toggleLike(answer)" class="like-button">
+                <el-icon :name="answer.liked ? 'el-icon-thumb-up-solid' : 'el-icon-thumb-up'"></el-icon>
+                <span class="like-count">{{ answer.likes }}</span>
+              </el-button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-
-    <button class="answer-button" @click="show">回答</button>
 
     <!-- 分页组件 -->
     <el-pagination
@@ -82,7 +79,9 @@ export default {
         time: '',
         description: '',
       },
-      answers: [],
+      answers: [
+        
+      ],
       showAnswerForm: false,
       newAnswer: {
         content: ''
@@ -176,37 +175,6 @@ export default {
           this.$message.error('回答提交失败');
         });
     },
-    toggleLike(answer) {
-    if (answer.liked) {
-      this.unlikeAnswer(answer);
-    } else {
-      this.likeAnswer(answer);
-    }
-  },
-  likeAnswer(answer) {
-    // Send a request to your server to record the like action
-    this.$axios
-      .post(`/answers/${answer.answerID}/like`)
-      .then((response) => {
-        answer.liked = true;
-        answer.likes++;
-      })
-      .catch((error) => {
-        console.error('Failed to like answer:', error);
-      });
-  },
-  unlikeAnswer(answer) {
-    // Send a request to your server to record the unlike action
-    this.$axios
-      .post(`/answers/${answer.answerID}/unlike`)
-      .then((response) => {
-        answer.liked = false;
-        answer.likes--;
-      })
-      .catch((error) => {
-        console.error('Failed to unlike answer:', error);
-      });
-  },
   },
 };
 </script>
@@ -299,14 +267,24 @@ export default {
   font-size: 16px;
   cursor: pointer;
 }
-.like-button {
+
+.like-button-container {
+  display: flex;
+  align-items: center;
   margin-top: 10px;
-  display: inline-block;
-  cursor: pointer;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 5px 10px;
+}
+
+.like-button {
+  display: flex;
+  align-items: center;
+}
+
+.like-button .el-icon {
+  font-size: 18px;
+  margin-right: 5px;
+}
+
+.like-count {
+  font-size: 14px;
 }
 </style>

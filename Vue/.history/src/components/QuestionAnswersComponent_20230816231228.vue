@@ -22,13 +22,7 @@
           <p>{{ answer.content }}</p>
           <div class="answer-info">
             <span class="answer-time">{{ answer.releaseTime }}</span>
-            <button
-              class="like-button"
-              :class="{ liked: answer.liked }"
-              @click="toggleLike(answer)"
-            >
-              👍 {{ answer.likes }}
-            </button>
+            <button class="like-button" @click="likeAnswer(answer)">👍 {{ answer.likes }}</button>
           </div>
         </div>
       </div>
@@ -176,37 +170,6 @@ export default {
           this.$message.error('回答提交失败');
         });
     },
-    toggleLike(answer) {
-    if (answer.liked) {
-      this.unlikeAnswer(answer);
-    } else {
-      this.likeAnswer(answer);
-    }
-  },
-  likeAnswer(answer) {
-    // Send a request to your server to record the like action
-    this.$axios
-      .post(`/answers/${answer.answerID}/like`)
-      .then((response) => {
-        answer.liked = true;
-        answer.likes++;
-      })
-      .catch((error) => {
-        console.error('Failed to like answer:', error);
-      });
-  },
-  unlikeAnswer(answer) {
-    // Send a request to your server to record the unlike action
-    this.$axios
-      .post(`/answers/${answer.answerID}/unlike`)
-      .then((response) => {
-        answer.liked = false;
-        answer.likes--;
-      })
-      .catch((error) => {
-        console.error('Failed to unlike answer:', error);
-      });
-  },
   },
 };
 </script>
@@ -298,15 +261,5 @@ export default {
   border-radius: 4px;
   font-size: 16px;
   cursor: pointer;
-}
-.like-button {
-  margin-top: 10px;
-  display: inline-block;
-  cursor: pointer;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 5px 10px;
 }
 </style>

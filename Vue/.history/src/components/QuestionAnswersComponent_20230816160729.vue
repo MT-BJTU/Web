@@ -22,13 +22,9 @@
           <p>{{ answer.content }}</p>
           <div class="answer-info">
             <span class="answer-time">{{ answer.releaseTime }}</span>
-            <button
-              class="like-button"
-              :class="{ liked: answer.liked }"
-              @click="toggleLike(answer)"
-            >
-              👍 {{ answer.likes }}
-            </button>
+            <el-button v-if="!answer.liked" type="text" @click="likeAnswer(answer.answerID)">点赞</el-button>
+            <el-button v-else type="text" @click="unlikeAnswer(answer.answerID)">取消点赞</el-button>
+            <span class="likes-count">{{ answer.likes }}</span>
           </div>
         </div>
       </div>
@@ -82,7 +78,9 @@ export default {
         time: '',
         description: '',
       },
-      answers: [],
+      answers: [
+        
+      ],
       showAnswerForm: false,
       newAnswer: {
         content: ''
@@ -163,6 +161,7 @@ export default {
       const Answer = {
         content: this.newAnswer.content,
         releaseTime: new Date().toLocaleString(),
+        likes: this.newAnswer.likes
       };
       this.$axios
         .post(`questions/${questionId}/postanswers`, Answer)
@@ -176,37 +175,39 @@ export default {
           this.$message.error('回答提交失败');
         });
     },
-    toggleLike(answer) {
-    if (answer.liked) {
-      this.unlikeAnswer(answer);
-    } else {
-      this.likeAnswer(answer);
-    }
-  },
-  likeAnswer(answer) {
-    // Send a request to your server to record the like action
-    this.$axios
-      .post(`/answers/${answer.answerID}/like`)
-      .then((response) => {
-        answer.liked = true;
-        answer.likes++;
-      })
-      .catch((error) => {
-        console.error('Failed to like answer:', error);
-      });
-  },
-  unlikeAnswer(answer) {
-    // Send a request to your server to record the unlike action
-    this.$axios
-      .post(`/answers/${answer.answerID}/unlike`)
-      .then((response) => {
-        answer.liked = false;
-        answer.likes--;
-      })
-      .catch((error) => {
-        console.error('Failed to unlike answer:', error);
-      });
-  },
+    likeAnswer(answerId) {
+      // Call the API to like the answer
+      this.$axios
+        .post(`/answers/${answerId}/like`)
+        .then((response) => {
+          this.updateAnswerLikes(answerId, response.data.likes);
+        })
+        .catch((error) => {
+          console.error('Failed to like answer:', error);
+        });
+    },
+
+    unlikeAnswer(answerId) {
+      // Call the API to unlike the answer
+      this.$axios
+        .post(`/answers/${answerId}/unlike`)
+        .then((response) => {
+          this.updateAnswerLikes(answerId, response.data.likes);
+        })
+        .catch((error) => {
+          console.error('Failed to unlike answer:', error);
+        });
+    },
+
+    updateAnswerLikes(answerId, likes) {
+      // Update the likes count for the specified answer
+      const answer = this.answers.find((answer) => answer.answerID === answerId);
+      if (answer) {
+        answer.likes = likes;
+        answer.liked = !answer.liked;
+      }
+    },
+
   },
 };
 </script>
@@ -298,15 +299,5 @@ export default {
   border-radius: 4px;
   font-size: 16px;
   cursor: pointer;
-}
-.like-button {
-  margin-top: 10px;
-  display: inline-block;
-  cursor: pointer;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 5px 10px;
 }
 </style>

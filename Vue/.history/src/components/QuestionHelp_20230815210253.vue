@@ -18,8 +18,8 @@
         <div class="question-description">{{ question.description }}</div>
         <div class="question-actions">
           <div class="question-actions-left">
-            <el-badge :value="question.answers" >
-              <el-button type="text" icon="el-icon-edit" class="answer-button" @click.stop="navigateToAnswers(question.questionId)"></el-button>
+            <el-badge :value="question.answers">
+              <el-button type="text" icon="el-icon-edit" class="answer-button" ></el-button>
             </el-badge>
             <span class="question-answers">{{ question.answers }} 回答</span>
           </div>

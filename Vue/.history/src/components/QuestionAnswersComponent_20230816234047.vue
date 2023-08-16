@@ -176,35 +176,17 @@ export default {
           this.$message.error('回答提交失败');
         });
     },
-    toggleLike(answer) {
-    if (answer.liked) {
-      this.unlikeAnswer(answer);
-    } else {
-      this.likeAnswer(answer);
-    }
-  },
-  likeAnswer(answer) {
+    likeAnswer(answer) {
     // Send a request to your server to record the like action
+    // For example, you can use Axios to post the like to your API
     this.$axios
       .post(`/answers/${answer.answerID}/like`)
       .then((response) => {
-        answer.liked = true;
+        // Update the likes count in the frontend
         answer.likes++;
       })
       .catch((error) => {
         console.error('Failed to like answer:', error);
-      });
-  },
-  unlikeAnswer(answer) {
-    // Send a request to your server to record the unlike action
-    this.$axios
-      .post(`/answers/${answer.answerID}/unlike`)
-      .then((response) => {
-        answer.liked = false;
-        answer.likes--;
-      })
-      .catch((error) => {
-        console.error('Failed to unlike answer:', error);
       });
   },
   },

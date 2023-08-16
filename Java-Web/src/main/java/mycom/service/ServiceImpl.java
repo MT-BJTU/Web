@@ -307,6 +307,49 @@ public class ServiceImpl implements Service {
             return new ResponseResult<>(500, "问题删除失败");
         }
     }
+    @Override
+    public void likeAnswer(Long answerId, Long userId) {
+        // Retrieve answer and user information from the database
+        Answer answer = answerMapper.selectById(answerId);
+        User user = userMapper.selectById(userId);
+
+        if (answer != null && user != null) {
+            // Check if the user has already liked the answer
+            List<Long> likedUserIds = answer.getLikedUserIds();
+            if (likedUserIds == null || !likedUserIds.contains(userId)) {
+                // Increment the likes count and add the user's ID to the likedUserIds list
+                answer.setLikes(answer.getLikes() + 1);
+                if (likedUserIds == null) {
+                    likedUserIds = new ArrayList<>();
+                }
+                likedUserIds.add(userId);
+                answer.setLikedUserIds(likedUserIds);
+
+                // Update the answer in the database
+                answerMapper.updateById(answer);
+            }
+        }
+    }
+
+    @Override
+    public void unlikeAnswer(Long answerId, Long userId) {
+        // Retrieve answer information from the database
+        Answer answer = answerMapper.selectById(answerId);
+
+        if (answer != null) {
+            // Check if the user has liked the answer
+            List<Long> likedUserIds = answer.getLikedUserIds();
+            if (likedUserIds != null && likedUserIds.contains(userId)) {
+                // Decrement the likes count and remove the user's ID from the likedUserIds list
+                answer.setLikes(answer.getLikes() - 1);
+                likedUserIds.remove(userId);
+                answer.setLikedUserIds(likedUserIds);
+
+                // Update the answer in the database
+                answerMapper.updateById(answer);
+            }
+        }
+    }
 }
 
 

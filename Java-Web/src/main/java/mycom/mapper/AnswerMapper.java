@@ -14,5 +14,6 @@ import java.util.List;
 public interface AnswerMapper extends BaseMapper<Answer> {
     @Select("SELECT * FROM Answer WHERE QueID = #{queId}")
     List<Answer> selectByQueId(@Param("queId") Long queId);
+    void updateLikes(@Param("answerId") Long answerId, @Param("likes") int likes, @Param("likedUserIds") List<Long> likedUserIds);
     // 可以自定义查询方法...
 }

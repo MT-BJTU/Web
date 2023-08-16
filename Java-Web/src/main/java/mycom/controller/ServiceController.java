@@ -3,9 +3,13 @@ import mycom.ActionResult.ResponseResult;
 import com.aliyuncs.ram.model.v20150501.ChangePasswordRequest;
 import mycom.bean.Answer;
 import mycom.bean.User;
+import mycom.mapper.AnswerMapper;
+import mycom.model.DetailedUser;
 import mycom.model.QuestionRequestDto;
 import mycom.service.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,6 +18,9 @@ public class ServiceController {
 
     @Autowired
     private Service service;
+
+    @Autowired
+    private AnswerMapper answerMapper;
 
     @PostMapping("/login")
     public ResponseResult<?>login(@RequestBody User user){
@@ -43,7 +50,6 @@ public class ServiceController {
     public ResponseResult<?>changePassword(@RequestBody ChangePasswordRequest request){
         return service.changePassword(request);
     }
-
     @GetMapping("/questions")
          ResponseResult<?>showQues(){
         return service.showQues();
@@ -71,5 +77,34 @@ public class ServiceController {
     @DeleteMapping("/questions/{questionId}")
     public ResponseResult<?> deleteQuestion(@PathVariable("questionId") Long questionId) {
         return service.deleteQuestion(questionId);
+    }
+    @PostMapping("/answers/{answerId}/like")
+    public ResponseResult<?> likeAnswer(@PathVariable("answerId") Long answerId) {
+        try {
+            Long userId = getUserId();
+            service.likeAnswer(answerId, userId);
+            return ResponseResult.success("Answer liked successfully");
+        } catch (Exception e) {
+            return ResponseResult.error();
+        }
+    }
+
+    @PostMapping("/answers/{answerId}/unlike")
+    public ResponseResult<?> unlikeAnswer(@PathVariable("answerId") Long answerId) {
+        try {
+            Long userId = getUserId();
+            service.unlikeAnswer(answerId, userId);
+            return ResponseResult.success("Answer unliked successfully");
+        } catch (Exception e) {
+            return ResponseResult.error();
+        }
+    }
+    private Long getUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof DetailedUser) {
+            DetailedUser detailedUser = (DetailedUser) authentication.getPrincipal();
+            return detailedUser.getUserId();
+        }
+        return null;
     }
 }

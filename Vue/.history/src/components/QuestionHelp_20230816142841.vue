@@ -21,7 +21,7 @@
             <el-badge :value="question.answers" >
               <el-button type="text" icon="el-icon-edit" class="answer-button" @click.stop="navigateToAnswers(question.questionId)"></el-button>
             </el-badge>
-            <span class="question-answers">{{ question.answers }} 回答</span>
+            <span class="question-answers"> 回答</span>
           </div>
           <div class="question-actions-right">
             <span class="question-time">发布时间: {{ question.time }}</span>
