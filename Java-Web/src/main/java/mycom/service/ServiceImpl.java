@@ -24,6 +24,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -346,6 +347,20 @@ public class ServiceImpl implements Service {
                 // Update the answer in the database
                 answerMapper.updateById(answer);
             }
+        }
+    }
+    @Override
+    public ResponseResult<String> uploadImage(MultipartFile file){
+        if (file.isEmpty()) {
+            return ResponseResult.error();
+        }
+        String imageUrl = oss.uploadOneFile(file);
+        System.out.println(imageUrl);
+        if (imageUrl != null) {
+            System.out.println(ResponseResult.success(imageUrl));
+            return ResponseResult.success(imageUrl);
+        } else {
+            return ResponseResult.error();
         }
     }
 }

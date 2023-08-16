@@ -15,7 +15,7 @@
       </div>
       <div class="question-details">
         <div class="question-title">{{ question.title }}</div>
-        <div class="question-description">{{ question.description }}</div>
+        <div class="question-description"> <vue-markdown :source="question.description" /></div>
         <div class="question-actions">
           <div class="question-actions-left">
             <el-badge :value="question.answers" >
@@ -31,25 +31,46 @@
     </el-card>
 
     <el-button type="primary" @click="showQuestionDialog" class="ask-button">我要提问</el-button>
-
-    <el-dialog
-      title="提出问题"
-      :visible.sync="dialogVisible"
-      :close-on-click-modal="false"
-      :show-close="ture"
-    >
-      <el-form ref="questionForm" :model="newQuestion" label-width="80px">
-        <el-form-item label="问题标题" required>
-          <el-input v-model="newQuestion.title" autocomplete="off" placeholder="请输入问题标题"></el-input>
-        </el-form-item>
-        <el-form-item label="问题详细描述" required>
-          <el-input v-model="newQuestion.description" type="textarea" rows="4" placeholder="请输入问题详细描述"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="submitQuestion">提交</el-button>
-        </el-form-item>
-      </el-form>
-    </el-dialog>
+    <template>
+  <el-dialog
+    title="提出问题"
+    :visible.sync="dialogVisible"
+    :close-on-click-modal="false"
+    :show-close="ture"
+  >
+    <el-form ref="questionForm" :model="newQuestion" label-width="80px">
+      <el-form-item label="问题标题" required>
+        <el-input v-model="newQuestion.title" autocomplete="off" placeholder="请输入问题标题"></el-input>
+      </el-form-item>
+      <el-form-item label="问题详细描述" required>
+        <el-input v-model="newQuestion.description" type="textarea" rows="4" placeholder="请输入问题详细描述"></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-upload
+        class="upload-demo"
+        ref="upload"
+        :action=uploadUrl
+        :on-success="handleUploadSuccess"
+        :on-error="handleUploadError"
+      >
+        <el-button size="small" type="primary">
+          <i class="el-icon-upload"></i> 点击上传图片
+        </el-button>
+      </el-upload>
+      </el-form-item>
+      <el-form-item>
+        <el-row>
+          <el-col :span="12">
+            <el-button type="primary" @click="submitQuestion">提交</el-button>
+          </el-col>
+          <el-col :span="12" class="text-right">
+            <el-button @click="dialogVisible = false">取消</el-button>
+          </el-col>
+        </el-row>
+      </el-form-item>
+    </el-form>
+  </el-dialog>
+</template>
 
     <el-pagination
       :current-page="currentPage"
@@ -69,6 +90,7 @@ export default {
   },
   data() {
     return {
+      uploadUrl: 'http://localhost:9000/api/upload-image',
       questions: [
         {
           questionId: '',
@@ -98,6 +120,25 @@ export default {
     },
   },
   methods: {
+    handleUploadSuccess(response) {
+      console.log(response)
+      if (response.data) {
+        const imageUrl = response.data; // 从后端返回的图片URL
+        this.insertImageIntoQuestionDescription(imageUrl);
+        this.$message.success('图片上传成功！');
+      } else {
+        this.$message.error('图片上传失败，请重试！');
+      }
+    },
+    
+    handleUploadError(error) {
+      this.$message.error('图片上传失败，请重试！');
+    },
+
+    insertImageIntoQuestionDescription(imageUrl) {
+      this.newQuestion.description += `\n![Image](${imageUrl})\n`; // 在问题描述中插入图片链接
+    },
+
     navigateToAnswers(questionId) {
       this.$router.push({ name: 'QuestionAnswers', params: { id: questionId } });
     },
@@ -118,6 +159,10 @@ export default {
       this.dialogVisible = true;
     },
     submitQuestion() {
+      if (!this.newQuestion.title.trim()) {
+      this.$message.error('问题标题不能为空');
+      return;
+    }
       // 构造问题对象
       const questionData = {
         title: this.newQuestion.title,
