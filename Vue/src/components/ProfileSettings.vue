@@ -131,7 +131,9 @@ export default {
       this.$axios.post('/user/save',this.data)
       .then(response=>{
         this.$message(response.data.msg)
-        window.location.reload();
+        setTimeout(() => {
+            window.location.reload();
+          }, 500);
       })
     },
     showChangePasswordModal() {
