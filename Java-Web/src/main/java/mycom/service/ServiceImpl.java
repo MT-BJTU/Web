@@ -89,19 +89,20 @@ public class ServiceImpl implements Service {
     }
     @Override
     public ResponseResult<?> register(User user) {
-        try {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            userMapper.insert(user);
-            Long userId = user.getUserId(); // 获取插入后生成的自增ID
-            System.out.println(userId);
-            if (userId != null) {
-                // 插入成功，userId 为插入后生成的自增ID
-                return new ResponseResult<>(200, "注册成功");
-            } else {
-                // 插入失败
-                return new ResponseResult<>(400, "用户名已存在");
-            }
-        } catch (Exception e) {
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getUserName,user.getUserName());
+        User now = userMapper.selectOne(queryWrapper);
+        if(now==null){
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userMapper.insert(user);
+        Long userId = user.getUserId();
+        if (userId != null) {
+            return new ResponseResult<>(200, "注册成功");
+        } else {
+            return new ResponseResult<>(400, "用户名已存在");
+        }
+        }
+        else {
             return new ResponseResult<>(400, "用户名已存在");
         }
     }
@@ -120,6 +121,9 @@ public class ServiceImpl implements Service {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getUserName,user.getUserName());
+        User old = userMapper.selectOne(queryWrapper);
+        if(old==null){
         queryWrapper.eq(User::getUserName,username);
         User now = userMapper.selectOne(queryWrapper);
         now.setUserName(user.getUserName());
@@ -136,8 +140,6 @@ public class ServiceImpl implements Service {
             }
         }
         now.setTrade(user.getTrade());
-        System.out.println(now);
-        try {
             int rows = userMapper.updateById(now);
             if (rows > 0) {
                 // 更新成功
@@ -146,10 +148,9 @@ public class ServiceImpl implements Service {
                 // 更新失败
                 return new ResponseResult<>(500, "更新失败");
             }
-        }catch (Exception e){
-            return new ResponseResult<>(500, "用户名已有");
         }
-
+        else
+            return new ResponseResult<>(500, "用户名已有");
     }
     @Override
     public ResponseResult<?> changePassword(ChangePasswordRequest request){
