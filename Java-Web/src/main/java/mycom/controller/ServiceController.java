@@ -2,6 +2,7 @@ package mycom.controller;
 import mycom.ActionResult.ResponseResult;
 import com.aliyuncs.ram.model.v20150501.ChangePasswordRequest;
 import mycom.bean.Answer;
+import mycom.bean.LikeRecord;
 import mycom.bean.User;
 import mycom.mapper.AnswerMapper;
 import mycom.model.DetailedUser;
@@ -82,6 +83,8 @@ public class ServiceController {
     @PostMapping("/answers/{answerId}/like")
     public ResponseResult<?> likeAnswer(@PathVariable("answerId") Long answerId) {
         try {
+
+            service.likeAnswer(answerId);
             Long userId = getUserId();
             if(userId!=0){
             service.likeAnswer(answerId, userId);
@@ -97,6 +100,7 @@ public class ServiceController {
     @PostMapping("/answers/{answerId}/unlike")
     public ResponseResult<?> unlikeAnswer(@PathVariable("answerId") Long answerId) {
         try {
+            service.unlikeAnswer(answerId);
             Long userId = getUserId();
             if(userId!=0){
             service.unlikeAnswer(answerId, userId);

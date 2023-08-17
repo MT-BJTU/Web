@@ -103,7 +103,8 @@ export default {
     this.fetchAnswers();
   },
   methods: {
-    fetchQuestion() {
+    fetchQuestion() 
+    {
       const questionId = this.$route.params.id;
       this.$axios
         .get(`/questions/${questionId}`)
