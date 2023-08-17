@@ -5,6 +5,9 @@ import App from './App'
 import router from './router'
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
+import VueMarkdown from 'vue-markdown';
+
+Vue.component('vue-markdown', VueMarkdown);
 var axios = require('axios')
 axios.defaults.baseURL = 'http://localhost:9000/api'
 // 绑定到全局

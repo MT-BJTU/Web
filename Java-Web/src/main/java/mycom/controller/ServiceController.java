@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api")
@@ -82,8 +83,15 @@ public class ServiceController {
     @PostMapping("/answers/{answerId}/like")
     public ResponseResult<?> likeAnswer(@PathVariable("answerId") Long answerId) {
         try {
+
             service.likeAnswer(answerId);
+            Long userId = getUserId();
+            if(userId!=0){
+            service.likeAnswer(answerId, userId);
             return ResponseResult.success("Answer liked successfully");
+            }
+            else
+                return new ResponseResult<>(500, "游客请登陆");
         } catch (Exception e) {
             return ResponseResult.error();
         }
@@ -93,9 +101,28 @@ public class ServiceController {
     public ResponseResult<?> unlikeAnswer(@PathVariable("answerId") Long answerId) {
         try {
             service.unlikeAnswer(answerId);
+            Long userId = getUserId();
+            if(userId!=0){
+            service.unlikeAnswer(answerId, userId);
             return ResponseResult.success("Answer unliked successfully");
+            }
+            else
+                return new ResponseResult<>(500, "游客请登陆");
         } catch (Exception e) {
             return ResponseResult.error();
         }
+    }
+    private Long getUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof DetailedUser) {
+            DetailedUser detailedUser = (DetailedUser) authentication.getPrincipal();
+            return detailedUser.getUserId();
+        }
+        return null;
+    }
+
+    @PostMapping("/upload-image")
+    public ResponseResult<?> uploadImage(@RequestParam("file") MultipartFile file) {
+     return service.uploadImage(file);
     }
 }
