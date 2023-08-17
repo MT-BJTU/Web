@@ -9,7 +9,7 @@
       <div class="question-info">
         <span class="question-time">{{ question.time }}</span>
       </div>
-      <p class="question-description">{{ question.description }}</p>
+      <markdown-collapse :content="question.description" />
     </div>
 
     <div class="answers-list">
@@ -19,7 +19,7 @@
           <span class="answer-username">{{ answer.user.userName }}</span>
         </div>
         <div class="answer-content">
-          <p>{{ answer.content }}</p>
+          <markdown-collapse :content="answer.content" />
           <div class="answer-info">
             <span class="answer-time">{{ answer.releaseTime }}</span>
             <button
@@ -69,7 +69,11 @@
 </template>
 
 <script>
+import MarkdownCollapse from '@/components/MarkdownCollapse';
 export default {
+  components: {
+    MarkdownCollapse,
+  },
   data() {
     return {
       question: {

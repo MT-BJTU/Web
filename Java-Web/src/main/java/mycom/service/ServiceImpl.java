@@ -367,9 +367,7 @@ public class ServiceImpl implements Service {
             return ResponseResult.error();
         }
         String imageUrl = oss.uploadOneFile(file);
-        System.out.println(imageUrl);
         if (imageUrl != null) {
-            System.out.println(ResponseResult.success(imageUrl));
             return ResponseResult.success(imageUrl);
         } else {
             return ResponseResult.error();

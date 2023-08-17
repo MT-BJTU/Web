@@ -15,7 +15,9 @@
       </div>
       <div class="question-details">
         <div class="question-title">{{ question.title }}</div>
-        <div class="question-description"> <vue-markdown :source="question.description" /></div>
+        <div class="question-description">
+          <markdown-collapse :content="question.description" />
+        </div>
         <div class="question-actions">
           <div class="question-actions-left">
             <el-badge :value="question.answers" >
@@ -36,7 +38,7 @@
     title="提出问题"
     :visible.sync="dialogVisible"
     :close-on-click-modal="false"
-    :show-close="ture"
+    :show-close="true"
   >
     <el-form ref="questionForm" :model="newQuestion" label-width="80px">
       <el-form-item label="问题标题" required>
@@ -47,16 +49,17 @@
       </el-form-item>
       <el-form-item>
         <el-upload
-        class="upload-demo"
-        ref="upload"
-        :action=uploadUrl
-        :on-success="handleUploadSuccess"
-        :on-error="handleUploadError"
-      >
-        <el-button size="small" type="primary">
-          <i class="el-icon-upload"></i> 点击上传图片
-        </el-button>
-      </el-upload>
+  class="upload-demo"
+  ref="upload"
+  :action="uploadUrl"
+  :on-success="handleUploadSuccess"
+  :on-error="handleUploadError"
+  :limit="3" 
+>
+  <el-button size="small" type="primary">
+    <i class="el-icon-upload"></i> 点击上传图片
+  </el-button>
+</el-upload>
       </el-form-item>
       <el-form-item>
         <el-row>
@@ -83,9 +86,11 @@
 </template>
 
 <script>
+import MarkdownCollapse from '@/components/MarkdownCollapse';
 import { ElBadge } from 'element-ui';
 export default {
   components: {
+    MarkdownCollapse,
     'el-badge': ElBadge,
   },
   data() {
@@ -121,7 +126,6 @@ export default {
   },
   methods: {
     handleUploadSuccess(response) {
-      console.log(response)
       if (response.data) {
         const imageUrl = response.data; // 从后端返回的图片URL
         this.insertImageIntoQuestionDescription(imageUrl);
@@ -130,15 +134,16 @@ export default {
         this.$message.error('图片上传失败，请重试！');
       }
     },
-    
-    handleUploadError(error) {
-      this.$message.error('图片上传失败，请重试！');
-    },
-
+    handleUploadError(file, fileList) {
+    this.$message.error('每次最多只能上传3张图片！');
+  },
     insertImageIntoQuestionDescription(imageUrl) {
-      this.newQuestion.description += `\n![Image](${imageUrl})\n`; // 在问题描述中插入图片链接
-    },
-
+  // 插入图片并设置样式
+  const imgTag = `<img src="${imageUrl}" style="max-width: 50%; height: auto;" alt="Image">`;
+  this.newQuestion.description += `\n${imgTag}\n`;
+  console.log("AAZZZZZ")
+}
+,
     navigateToAnswers(questionId) {
       this.$router.push({ name: 'QuestionAnswers', params: { id: questionId } });
     },

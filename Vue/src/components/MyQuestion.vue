@@ -14,12 +14,14 @@
       </div>
       <div class="question-details">
         <div class="question-title">{{ question.title }}</div>
-        <div class="question-description">{{ question.description }}</div>
+        <div class="question-description">     
+           <markdown-collapse :content="question.description" />
+        </div>
         <div class="question-actions">
-          <!-- <div class="question-actions-left">
+          <div class="question-actions-left">
             <el-button type="text" icon="el-icon-edit" class="answer-button" @click.stop="navigateToAnswers(question.questionId)"></el-button>
             <span class="question-answers">{{ question.answers }} 回答</span>
-          </div> -->
+          </div> 
           <div class="question-actions-right">
             <span class="question-time">发布时间: {{ question.time }}</span>
             <i class="el-icon-delete delete-icon" @click.stop="deleteQuestion(question.questionId)"></i>
@@ -39,7 +41,11 @@
 </template>
 
 <script>
+import MarkdownCollapse from '@/components/MarkdownCollapse';
 export default {
+  components: {
+    MarkdownCollapse,
+  },
   data() {
     return {
       questions: [
