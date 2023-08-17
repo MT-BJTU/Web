@@ -87,7 +87,6 @@ public class ServiceController {
             service.likeAnswer(answerId);
             Long userId = getUserId();
             if(userId!=0){
-            service.likeAnswer(answerId, userId);
             return ResponseResult.success("Answer liked successfully");
             }
             else
@@ -103,7 +102,6 @@ public class ServiceController {
             service.unlikeAnswer(answerId);
             Long userId = getUserId();
             if(userId!=0){
-            service.unlikeAnswer(answerId, userId);
             return ResponseResult.success("Answer unliked successfully");
             }
             else
