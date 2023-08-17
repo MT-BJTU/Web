@@ -14,11 +14,11 @@ import java.util.UUID;
 public class JwtUtil {
 
     // 有效期为
-<<<<<<< HEAD
+
     public static final Long JWT_TTL = 24*60 * 60 * 100000000000000L;
-=======
-    public static final Long JWT_TTL = 30*24*60*60*1000L;
->>>>>>> dd78e46c9aa4aa140263aa22643b8ee909a21dac
+
+
+
 
     // 设置秘钥明文
     public static final String JWT_KEY = "gc";

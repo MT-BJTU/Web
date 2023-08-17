@@ -9,10 +9,12 @@ import mycom.bean.Answer;
 import mycom.bean.Question;
 import mycom.view.QuestionView;
 import mycom.bean.User;
+import mycom.bean.LikeRecord;
 import mycom.config.OSSConfig;
 import mycom.mapper.AnswerMapper;
 import mycom.mapper.QuestionMapper;
 import mycom.mapper.QuestionViewMapper;
+import mycom.mapper.LikeRecordMapper;
 import mycom.mapper.UserMapper;
 import mycom.model.DetailedUser;
 import mycom.model.QuestionRequestDto;
@@ -27,6 +29,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -37,6 +40,7 @@ public class ServiceImpl implements Service {
     @Autowired
     private UserMapper userMapper;
 
+
     @Autowired
     private QuestionViewMapper questionViewMapper;
     @Autowired
@@ -44,6 +48,9 @@ public class ServiceImpl implements Service {
 
     @Autowired
     private AnswerMapper answerMapper;
+
+    @Autowired
+    private LikeRecordMapper likeRecordMapper;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -228,16 +235,6 @@ public class ServiceImpl implements Service {
         }
     }
 
-    private Long getUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof DetailedUser) {
-            DetailedUser detailedUser = (DetailedUser) authentication.getPrincipal();
-            return detailedUser.getUserId();
-        }
-        return null;
-    }
-
-
     @Override
     public ResponseResult<?> getQuestion(Long questionId) {
         try {
@@ -309,44 +306,49 @@ public class ServiceImpl implements Service {
         }
     }
     @Override
-    public void likeAnswer(Long answerId, Long userId) {
-        // Retrieve answer and user information from the database
-        Answer answer = answerMapper.selectById(answerId);
-        User user = userMapper.selectById(userId);
+    public void likeAnswer(Long answerId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = null;
+        if (authentication != null && authentication.getPrincipal() instanceof DetailedUser) {
+            DetailedUser detailedUser = (DetailedUser) authentication.getPrincipal();
+            userId = detailedUser.getUserId();
+        }
+        // Check if the user has already liked the answer
+        LikeRecord existingLike = likeRecordMapper.selectById(answerId);
+        System.out.println(existingLike+" jia");
+        if (existingLike == null) {
+            // Create a new like record
+            LikeRecord likeRecord = new LikeRecord(answerId, userId);
+            likeRecordMapper.insert(likeRecord);
 
-        if (answer != null && user != null) {
-            // Check if the user has already liked the answer
-            List<Long> likedUserIds = answer.getLikedUserIds();
-            if (likedUserIds == null || !likedUserIds.contains(userId)) {
-                // Increment the likes count and add the user's ID to the likedUserIds list
+            // Update the likes count in the Answer table
+            Answer answer = answerMapper.selectById(answerId);
+            if (answer != null) {
                 answer.setLikes(answer.getLikes() + 1);
-                if (likedUserIds == null) {
-                    likedUserIds = new ArrayList<>();
-                }
-                likedUserIds.add(userId);
-                answer.setLikedUserIds(likedUserIds);
-
-                // Update the answer in the database
                 answerMapper.updateById(answer);
             }
         }
     }
 
     @Override
-    public void unlikeAnswer(Long answerId, Long userId) {
-        // Retrieve answer information from the database
-        Answer answer = answerMapper.selectById(answerId);
+    public void unlikeAnswer(Long answerId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = null;
+        if (authentication != null && authentication.getPrincipal() instanceof DetailedUser) {
+            DetailedUser detailedUser = (DetailedUser) authentication.getPrincipal();
+            userId = detailedUser.getUserId();
+        }
+        // Check if the user has liked the answer
+        LikeRecord existingLike = likeRecordMapper.selectById(answerId);
+        System.out.println(existingLike+" jian");
+        if (existingLike != null && existingLike.getUserID().equals(userId)) {
+            // Delete the like record
+            likeRecordMapper.deleteById(answerId);
 
-        if (answer != null) {
-            // Check if the user has liked the answer
-            List<Long> likedUserIds = answer.getLikedUserIds();
-            if (likedUserIds != null && likedUserIds.contains(userId)) {
-                // Decrement the likes count and remove the user's ID from the likedUserIds list
+            // Update the likes count in the Answer table
+            Answer answer = answerMapper.selectById(answerId);
+            if (answer != null) {
                 answer.setLikes(answer.getLikes() - 1);
-                likedUserIds.remove(userId);
-                answer.setLikedUserIds(likedUserIds);
-
-                // Update the answer in the database
                 answerMapper.updateById(answer);
             }
         }

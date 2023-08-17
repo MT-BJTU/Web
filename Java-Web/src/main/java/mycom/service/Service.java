@@ -24,6 +24,7 @@ public interface Service {
     ResponseResult<?>getAnswersByQuestionId(Long questionId);
     ResponseResult<?>submitAnswer(Long questionId, Answer answer);
     ResponseResult<?>deleteQuestion(Long questionId);
-    void likeAnswer(Long answerId, Long userId);   // Modified to accept userId
-    void unlikeAnswer(Long answerId, Long userId); // Modified to accept userId
+    void likeAnswer(Long answerId);
+
+    void unlikeAnswer(Long answerId);
 }

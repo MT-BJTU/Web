@@ -2,6 +2,7 @@ package mycom.controller;
 import mycom.ActionResult.ResponseResult;
 import com.aliyuncs.ram.model.v20150501.ChangePasswordRequest;
 import mycom.bean.Answer;
+import mycom.bean.LikeRecord;
 import mycom.bean.User;
 import mycom.mapper.AnswerMapper;
 import mycom.model.DetailedUser;
@@ -81,8 +82,7 @@ public class ServiceController {
     @PostMapping("/answers/{answerId}/like")
     public ResponseResult<?> likeAnswer(@PathVariable("answerId") Long answerId) {
         try {
-            Long userId = getUserId();
-            service.likeAnswer(answerId, userId);
+            service.likeAnswer(answerId);
             return ResponseResult.success("Answer liked successfully");
         } catch (Exception e) {
             return ResponseResult.error();
@@ -92,19 +92,10 @@ public class ServiceController {
     @PostMapping("/answers/{answerId}/unlike")
     public ResponseResult<?> unlikeAnswer(@PathVariable("answerId") Long answerId) {
         try {
-            Long userId = getUserId();
-            service.unlikeAnswer(answerId, userId);
+            service.unlikeAnswer(answerId);
             return ResponseResult.success("Answer unliked successfully");
         } catch (Exception e) {
             return ResponseResult.error();
         }
-    }
-    private Long getUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof DetailedUser) {
-            DetailedUser detailedUser = (DetailedUser) authentication.getPrincipal();
-            return detailedUser.getUserId();
-        }
-        return null;
     }
 }

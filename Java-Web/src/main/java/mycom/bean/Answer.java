@@ -33,8 +33,6 @@ public class Answer  {
 
     @TableField(value = "Likes")
     private int likes;
-    @TableField(exist = false)
-    private List<Long> likedUserIds;
 
     @TableField(exist = false)
     private User user;
