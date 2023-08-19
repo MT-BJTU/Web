@@ -6,7 +6,6 @@
       :class="['question-card', getRandomColor()]"
       @click.stop="navigateToAnswers(question.questionId)"
     >
-      <!-- 问题卡片的内容 -->
       <div class="question-avatar-username">
         <div class="question-user-avatar">
           <img :src="question.avatar" alt="User Avatar" class="user-avatar">
@@ -24,6 +23,15 @@
               <el-button type="text" icon="el-icon-edit" class="answer-button" @click.stop="navigateToAnswers(question.questionId)"></el-button>
             </el-badge>
             <span class="question-answers">{{ question.answers }} 回答</span>
+            <el-badge >
+              <el-button
+                type="text" @click.stop="toggleFollowQuestion(question)"
+              >
+            <i class="el-icon-star-off" v-if="!question.follower"></i>
+            <i class="el-icon-star-on" v-else></i>
+              </el-button>
+            </el-badge>
+            <span class="follow-count">{{ question.followCount }} 关注</span>
           </div>
           <div class="question-actions-right">
             <span class="question-time">发布时间: {{ question.time }}</span>
@@ -54,7 +62,6 @@
   :action="uploadUrl"
   :on-success="handleUploadSuccess"
   :on-error="handleUploadError"
-  :limit="3" 
   :show-file-list="false"
 >
   <el-button size="small" type="primary">
@@ -128,11 +135,14 @@ export default {
           avatar: '',
           time: '',
           answers: '',
+          followCount:'',
+          follower: false
         },
       ],
       totalDisplayedPages: 0, 
       currentPage: 1,
       pageSize: 5,
+      isFollowed:true,
       dialogVisible: false,
       newQuestion: {
         title: '',
@@ -150,8 +160,26 @@ export default {
 
     return filteredQuestions
   },
+
   },
   methods: {
+    toggleFollowQuestion(question) {
+      this.$axios
+        .post('/follow-question', question)
+        .then((response) => {
+            this.$message(response.data.msg)
+            if(response.data.code!==500){
+              if(response.data.code===200)
+                question.followCount++;
+              else
+                question.followCount--;
+              this.$set(question, 'follower', !question.follower);
+              this.$forceUpdate()
+            }
+        }).catch((error)=>{
+          this.$message.error('网络故障！');
+        })
+  },
     handleSearchInput() {
     this.searchQuestions(); 
   },
@@ -168,7 +196,7 @@ export default {
   },
     handleUploadSuccess(response) {
       if (response.data) {
-        const imageUrl = response.data; // 从后端返回的图片URL
+        const imageUrl = response.data;
         this.insertImageIntoQuestionDescription(imageUrl);
         this.$message.success('图片上传成功！');
       } else {
@@ -179,7 +207,6 @@ export default {
     this.$message.error('每次最多只能上传3张图片！');
   },
     insertImageIntoQuestionDescription(imageUrl) {
-  // 插入图片并设置样式
   const imgTag = `<img src="${imageUrl}" style="max-width: 50%; height: auto;" alt="Image">`;
   this.newQuestion.description += `\n${imgTag}\n`;
 }
@@ -208,19 +235,15 @@ export default {
       this.$message.error('问题标题不能为空');
       return;
     }
-      // 构造问题对象
       const questionData = {
         title: this.newQuestion.title,
         description: this.newQuestion.description,
       };
       this.newQuestion.title = '';
       this.newQuestion.description = '';
-      // 发送 POST 请求将问题提交到服务器
       this.$axios
         .post('/submit-question', questionData)
         .then((response) => {
-          // 提交成功的处理逻辑
-          // 刷新问题列表，重新获取问题数据
           this.$axios
             .get('/questions')
             .then((response) => {
@@ -237,16 +260,13 @@ export default {
             .catch((error) => {
               console.error('获取问题列表失败:', error);
             });
-          // 给出成功提示
           this.$message(response.data.msg);
         })
         .catch((error) => {
-          // 提交失败的处理逻辑
           console.error('问题提交失败:', error);
           this.$message.error('问题提交失败，请重试！');
         })
         .finally(() => {
-          // 关闭对话框
           this.dialogVisible = false;
         });
     },
@@ -336,6 +356,11 @@ export default {
   color: #666;
   margin-left: 5px;
 }
+.follow-count {
+  font-size: 14px;
+  color: #666;
+  margin-left: 5px;
+}
 
 .question-time {
   font-size: 14px;
@@ -405,5 +430,10 @@ export default {
   text-align: center;
   padding: 15px;
   font-size: 16px;
+}
+
+
+.el-icon-star-on {
+  color: #f9a825; 
 }
 </style>

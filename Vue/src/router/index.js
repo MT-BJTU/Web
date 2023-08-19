@@ -9,6 +9,7 @@ import QuestionHelp from '@/components/QuestionHelp'
 import QuestionAnswersComponent from '@/components/QuestionAnswersComponent.vue';
 import MyQuestion from '@/components/MyQuestion.vue'
 import TechDiscussion from '@/components/Articles.vue'
+import MyFollower from '@/components/MyFollower.vue'
 Vue.use(Router)
 
 const router = new Router({
@@ -27,12 +28,13 @@ const router = new Router({
       path: '/',
       name: 'forumLayout',
       component: ForumLayout,
-      children: [/*
+      children: [
         {
-          path: 'TechDiscussion',
-          name: 'TechDiscussion',
+          path: 'techDiscussion',
+          name: 'techDiscussion',
           component: TechDiscussion
         },
+        /*
         {
           path: 'ResourceShare',
           name: 'ResourceShare',
@@ -51,14 +53,14 @@ const router = new Router({
           component: MyArticles
         },*/
         {
-          path: 'techDiscussion',
-          name: 'tTechDiscussion',
-          component: TechDiscussion
-        },
-        {
           path: 'myQuestions',
           name: 'myQuestions',
           component: MyQuestion
+        },
+        {
+          path: 'myFollowers',
+          name: 'myFollowers',
+          component: MyFollower
         },
         {
           path: '/question/:id',

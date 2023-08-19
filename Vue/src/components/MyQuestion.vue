@@ -5,7 +5,6 @@
       :key="question.questionId"
       :class="['question-card', getRandomColor()]"
     >
-      <!-- 问题卡片的内容 -->
       <div class="question-avatar-username">
         <div class="question-user-avatar">
           <img :src="question.avatar" alt="User Avatar" class="user-avatar">
@@ -21,6 +20,15 @@
           <div class="question-actions-left">
             <el-button type="text" icon="el-icon-edit" class="answer-button" @click.stop="navigateToAnswers(question.questionId)"></el-button>
             <span class="question-answers">{{ question.answers }} 回答</span>
+            <el-badge>
+              <el-button
+                type="text" @click.stop="toggleFollowQuestion(question)"
+              >
+            <i class="el-icon-star-off" v-if="!question.follower"></i>
+            <i class="el-icon-star-on" v-else></i>
+              </el-button>
+            </el-badge>
+            <span class="follow-count">{{ question.followCount }} 关注</span>
           </div> 
           <div class="question-actions-right">
             <span class="question-time">发布时间: {{ question.time }}</span>
@@ -66,8 +74,9 @@ export default {
           avatar: '',
           time: '',
           answers: '',
+          followCount:'',
+          follower: false
         },
-        // 其他问题对象...
       ],
       currentPage: 1,
       pageSize: 5,
@@ -81,6 +90,23 @@ export default {
     },
   },
   methods: {
+    toggleFollowQuestion(question) {
+      this.$axios
+        .post('/follow-question', question)
+        .then((response) => {
+            this.$message(response.data.msg)
+            if(response.data.code!==500){
+              if(response.data.code===200)
+                question.followCount++;
+              else
+                question.followCount--;
+              this.$set(question, 'follower', !question.follower);
+              this.$forceUpdate()
+            }
+        }).catch((error)=>{
+          this.$message.error('网络故障！');
+        })
+  },
     navigateToAnswers(questionId) {
       this.$router.push({ name: 'QuestionAnswers', params: { id: questionId } });
     },
@@ -98,11 +124,9 @@ export default {
       this.currentPage = currentPage;
     },
     deleteQuestion(questionId) {
-      // 发送删除问题的请求，并更新列表
       this.$axios
         .delete(`/questions/${questionId}`)
         .then((response) => {
-          // 根据返回的结果进行处理，比如更新列表或显示提示信息
           this.questions = this.questions.filter((question) => question.questionId !== questionId);
           this.$message.success('问题删除成功！');
         })
@@ -113,12 +137,10 @@ export default {
     },
   },
   created() {
-    // 组件加载时发送请求获取问题列表
     this.$axios
       .get('/myquestions')
       .then((response) => {
         this.questions = response.data.data;
-        // 设置默认头像
         this.questions.forEach((question) => {
           if (!question.avatar) {
             question.avatar =
@@ -236,10 +258,6 @@ export default {
   background-color: #f0f0f5;
 }
 
-/* 移除小红点样式 */
-.el-badge .el-badge__content {
-  display: none;
-}
 .pagination-container {
   text-align: center;
   padding: 20px 0;
@@ -255,5 +273,12 @@ export default {
   padding: 15px;
   font-size: 16px;
 }
-
+.follow-count {
+  font-size: 14px;
+  color: #666;
+  margin-left: 5px;
+}
+.el-icon-star-on {
+  color: #f9a825; 
+}
 </style>

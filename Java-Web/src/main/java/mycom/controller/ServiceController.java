@@ -3,6 +3,7 @@ import mycom.ActionResult.ResponseResult;
 import com.aliyuncs.ram.model.v20150501.ChangePasswordRequest;
 import mycom.bean.Answer;
 import mycom.bean.LikeRecord;
+import mycom.bean.Question;
 import mycom.bean.User;
 import mycom.mapper.AnswerMapper;
 import mycom.model.DetailedUser;
@@ -122,5 +123,14 @@ public class ServiceController {
     @PostMapping("/upload-image")
     public ResponseResult<?> uploadImage(@RequestParam("file") MultipartFile file) {
      return service.uploadImage(file);
+    }
+    @PostMapping("/follow-question")
+    public ResponseResult<?> follow(@RequestBody Question question) {
+        return service.follow(question);
+    }
+
+    @GetMapping("/myfollower")
+    public ResponseResult<?> myfollow() {
+        return service.myfollow();
     }
 }

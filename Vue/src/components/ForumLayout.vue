@@ -20,8 +20,8 @@
           </template>
           <el-menu-item index="2-1" @click="navigateTo('我的问题')">我的问题</el-menu-item>
           <el-menu-item index="2-2" @click="navigateTo('我的关注')">我的关注</el-menu-item>
-          <el-menu-item index="2-3" @click="navigateTo('我的收藏')">我的收藏</el-menu-item>
-          <el-menu-item index="2-4" @click="navigateTo('我的文章')">我的文章</el-menu-item>
+          <el-menu-item index="2-3" @click="navigateTo('我的文章')">我的文章</el-menu-item>
+          <el-menu-item index="2-4" @click="navigateTo('我的收藏')">我的收藏</el-menu-item>
           <el-menu-item index="2-5" @click="navigateTo('个人设置')">个人设置</el-menu-item>
         </el-submenu>
         <el-menu-item index="3" @click="logout">
@@ -50,9 +50,8 @@ export default {
     created() {
     this.$axios.get('/user/profile')
       .then(response => {
-        const userData = response.data.data; // 假设响应以预期格式包含用户数据
+        const userData = response.data.data; 
         this.userId=userData.userId
-        console.log(this.userId)
         if(userData.avatar==null){
           this.userAvatar = "https://scott-gc.oss-cn-hangzhou.aliyuncs.com/img/202306041932702.png";
         }else{
@@ -76,6 +75,8 @@ export default {
     navigateTo(page) {
       if (page === '技术讨论') {
         this.$router.push('/techDiscussion');
+      } else if(page==='我的关注'){
+        this.$router.push('/myFollowers');
       } else if (page === '问题求助') {
         this.$router.push('/');
       } else if (page === '我的问题') {

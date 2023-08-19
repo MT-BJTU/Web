@@ -5,17 +5,10 @@ import mycom.ActionResult.ResponseResult;
 import com.aliyuncs.ram.model.v20150501.ChangePasswordRequest;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import mycom.bean.Answer;
-import mycom.bean.Question;
+import mycom.bean.*;
+import mycom.mapper.*;
 import mycom.view.QuestionView;
-import mycom.bean.User;
-import mycom.bean.LikeRecord;
 import mycom.config.OSSConfig;
-import mycom.mapper.AnswerMapper;
-import mycom.mapper.QuestionMapper;
-import mycom.mapper.QuestionViewMapper;
-import mycom.mapper.LikeRecordMapper;
-import mycom.mapper.UserMapper;
 import mycom.model.DetailedUser;
 import mycom.model.QuestionRequestDto;
 import mycom.utils.JwtUtil;
@@ -38,7 +31,8 @@ public class ServiceImpl implements Service {
     @Autowired
     private UserMapper userMapper;
 
-
+    @Autowired
+    private FollowersMapper followersMapper;
     @Autowired
     private QuestionViewMapper questionViewMapper;
     @Autowired
@@ -188,6 +182,17 @@ public class ServiceImpl implements Service {
         QueryWrapper<QuestionView> queryWrapper = new QueryWrapper<>();
         queryWrapper.orderByDesc("time");
         List<QuestionView> questionList=questionViewMapper.selectList(queryWrapper);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = null;
+        if (authentication != null && authentication.getPrincipal() instanceof DetailedUser) {
+            DetailedUser detailedUser = (DetailedUser) authentication.getPrincipal();
+            userId = detailedUser.getUserId();
+        }
+        for(int i=0;i<questionList.size();i++){
+            Followers exist = followersMapper.selectByUserIdAndQuestionId(userId, questionList.get(i).getQuestionId());
+            if (exist != null)
+                questionList.get(i).setFollower(true);
+        }
         return   ResponseResult.success(questionList);
     }
     @Override
@@ -202,6 +207,11 @@ public class ServiceImpl implements Service {
         queryWrapper.eq("UserID", userId);
         List<QuestionView> questionList=questionViewMapper.selectList(queryWrapper);
         Collections.sort(questionList, Comparator.comparing(QuestionView::getTime).reversed());
+        for(int i=0;i<questionList.size();i++){
+            Followers exist = followersMapper.selectByUserIdAndQuestionId(userId, questionList.get(i).getQuestionId());
+            if (exist != null)
+                questionList.get(i).setFollower(true);
+        }
         return ResponseResult.success(questionList);
     }
 
@@ -372,6 +382,56 @@ public class ServiceImpl implements Service {
         } else {
             return ResponseResult.error();
         }
+    }
+    @Override
+    public ResponseResult<?> follow(Question question){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = null;
+        if (authentication != null && authentication.getPrincipal() instanceof DetailedUser) {
+            DetailedUser detailedUser = (DetailedUser) authentication.getPrincipal();
+            userId = detailedUser.getUserId();
+        }
+        if(userId!=0){
+            try {
+                Followers exist = followersMapper.selectByUserIdAndQuestionId(userId, question.getQuestionId());
+                if (exist == null){
+                    followersMapper.insert(userId, question.getQuestionId());
+                    return new ResponseResult<>(200, "关注成功");
+                }
+                else {
+                    followersMapper.delete(userId, question.getQuestionId());
+                    return new ResponseResult<>(201, "取消关注成功");
+                }
+            }
+            catch (Exception e){
+                return new ResponseResult<>(500, "失败");
+            }
+        }
+        else
+            return new ResponseResult<>(500, "游客请登陆");
+    }
+    @Override
+    public ResponseResult<?> myfollow(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Long userId = null;
+        if (authentication != null && authentication.getPrincipal() instanceof DetailedUser) {
+            DetailedUser detailedUser = (DetailedUser) authentication.getPrincipal();
+            userId = detailedUser.getUserId();
+        }
+        QueryWrapper<Followers> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("UserID", userId);
+        List<Followers> queIdList=followersMapper.selectList(queryWrapper);
+        List<QuestionView> questionList=new ArrayList<>();
+        for(int i=0;i<queIdList.size();i++){
+            Long questionId = queIdList.get(i).getQueId();
+            QuestionView questionView=questionViewMapper.selectById(questionId);
+            if (questionView != null) {
+                questionView.setFollower(true);
+                questionList.add(questionView);
+            }
+        }
+        Collections.sort(questionList, Comparator.comparing(QuestionView::getTime).reversed());
+        return ResponseResult.success(questionList);
     }
 }
 

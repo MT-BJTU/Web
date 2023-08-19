@@ -30,6 +30,8 @@ public class Question implements Serializable {
     private String time;
     @TableField(value = "Answers_num")
     private int answers;
+    @TableField(value = "FollowCount")
+    private int followCount;
     @TableField(exist = false)
     private User user;
 }
