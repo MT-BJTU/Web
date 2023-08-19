@@ -78,6 +78,7 @@
           :action="uploadUrl"
           :on-success="handleUploadSuccess"
           :on-error="handleUploadError"
+          :limit="3" 
           :show-file-list="false"
         >
           <el-button size="small" type="primary">
@@ -235,7 +236,6 @@ export default {
         .then((response) => {
           console.log(response);
           if ((response.data.code===200)) {
-
             answer.likes++;
           } else {
             answer.likes--;
@@ -381,7 +381,5 @@ export default {
   justify-content: space-between;
 }
 
-.liked {
-  color: red;
-}
+
 </style>

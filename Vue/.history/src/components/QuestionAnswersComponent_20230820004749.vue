@@ -78,6 +78,7 @@
           :action="uploadUrl"
           :on-success="handleUploadSuccess"
           :on-error="handleUploadError"
+          :limit="3" 
           :show-file-list="false"
         >
           <el-button size="small" type="primary">

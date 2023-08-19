@@ -27,9 +27,8 @@ public interface Service {
     ResponseResult<?>submitAnswer(Long questionId, Answer answer);
     ResponseResult<?>deleteQuestion(Long questionId);
 
-    void likeAnswer(Long answerId);
+    ResponseResult<?> likeAnswer(Long answerId);
 
-    void unlikeAnswer(Long answerId);
 
      ResponseResult<String> uploadImage(MultipartFile file);
 
