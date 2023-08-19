@@ -68,30 +68,35 @@
       'el-badge': ElBadge,
     },
     data() {
-      return {
-        articles: [
-          {
-            articleId: '',
-            title: '',
-            description: '',
-            user: {
-              userName: '',
-              avatar: '',
-            },
-            time: '',
-            answers: '',
-          },
-          // 其他问题对象...
-        ],
-        currentPage: 1,
-        pageSize: 5,
-        dialogVisible: false,
-        newarticle: {
-          title: '',
-          description: '',
+  return {
+    articles: [
+      {
+        articleId: '1',
+        title: 'Sample Article 1',
+        description: 'This is the description of the first article.',
+        user: {
+          userName: 'User1',
+          avatar: 'avatar1',
         },
-      };
-    },
+        time: '2023-08-18',
+        answers: 5,
+      },
+      {
+        articleId: '2',
+        title: 'Sample Article 2',
+        description: 'This is the description of the second article.',
+        user: {
+          userName: 'User2',
+          avatar: 'avatar2',
+        },
+        time: '2023-08-19',
+        answers: 3,
+      },
+      // Add more sample articles...
+    ],
+    // Other data properties...
+  };
+},
     computed: {
       displayedarticles() {
         const startIndex = (this.currentPage - 1) * this.pageSize;
@@ -139,10 +144,7 @@
               .then((response) => {
                 this.articles = response.data.data;
                 this.articles.forEach((article) => {
-                  if (!article.user.avatar) {
-                    article.user.avatar =
-                      'https://scott-gc.oss-cn-hangzhou.aliyuncs.com/img/202306041932702.png';
-                  }
+              
                 });
               })
               .catch((error) => {
@@ -162,24 +164,6 @@
             this.dialogVisible = false;
           });
       },
-    },
-    created() {
-      // 组件加载时发送请求获取问题列表
-      this.$axios
-        .get('/articles')
-        .then((response) => {
-          this.articles = response.data.data;
-          // 设置默认头像
-          this.articles.forEach((article) => {
-            if (!article.user.avatar) {
-              article.user.avatar =
-                'https://scott-gc.oss-cn-hangzhou.aliyuncs.com/img/202306041932702.png';
-            }
-          });
-        })
-        .catch((error) => {
-          console.error('获取文章列表失败:', error);
-        });
     },
   };
   </script>

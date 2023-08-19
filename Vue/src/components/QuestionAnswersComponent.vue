@@ -35,35 +35,57 @@
     </div>
 
     <button class="answer-button" @click="show">回答</button>
-
-    <!-- 分页组件 -->
     <el-pagination
-      class="pagination"
-      :current-page="currentPage"
+    v-if="answers.length !== 0"
+    class="pagination-container"
+    :current-page="currentPage"
       :page-size="pageSize"
       :total="answers.length"
       @current-change="handlePageChange"
-    ></el-pagination>
-
+  ></el-pagination>
+  <el-alert
+        v-else
+        title="还没有人回答"
+        type="info"
+        show-icon
+        class="no-results-alert"
+        :closable="false"
+      />
     <el-dialog
       title="回答问题"
       :visible.sync="showAnswerForm"
       width="30%"
       @close="resetAnswerForm"
     >
-      <el-form ref="answerForm" :model="newAnswer" label-width="80px">
-        <el-form-item label="回答内容" required>
-          <el-input
-            v-model="newAnswer.content"
-            type="textarea"
-            rows="4"
-            placeholder="请输入回答内容"
-          ></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="submitAnswer">提交回答</el-button>
-        </el-form-item>
-      </el-form>
+    <el-form ref="answerForm" :model="newAnswer" label-width="80px">
+    <el-form-item label="回答内容" required>
+      <el-input
+        v-model="newAnswer.content"
+        type="textarea"
+        rows="4"
+        placeholder="请输入回答内容"
+      ></el-input>
+    </el-form-item>
+
+    <el-form-item>
+      <div class="button-container">
+        <el-upload
+          class="upload-demo"
+          ref="upload"
+          :action="uploadUrl"
+          :on-success="handleUploadSuccess"
+          :on-error="handleUploadError"
+          :limit="3" 
+          :show-file-list="false"
+        >
+          <el-button size="small" type="primary">
+            <i class="el-icon-upload"></i> 点击上传图片
+          </el-button>
+        </el-upload>
+        <el-button type="primary" @click="submitAnswer">提交回答</el-button>
+      </div>
+    </el-form-item>
+  </el-form>
     </el-dialog>
   </div>
 </template>
@@ -76,6 +98,7 @@ export default {
   },
   data() {
     return {
+      uploadUrl: 'http://localhost:9000/api/upload-image',
       question: {
         id: null,
         title: '',
@@ -107,6 +130,24 @@ export default {
     this.fetchAnswers();
   },
   methods: {
+    handleUploadSuccess(response) {
+      if (response.data) {
+        const imageUrl = response.data; // 从后端返回的图片URL
+        this.insertImageIntoQuestionDescription(imageUrl);
+        this.$message.success('图片上传成功！');
+      } else {
+        this.$message.error('图片上传失败，请重试！');
+      }
+    },
+    handleUploadError(file, fileList) {
+    this.$message.error('每次最多只能上传3张图片！');
+  },
+    insertImageIntoQuestionDescription(imageUrl) {
+  // 插入图片并设置样式
+  const imgTag = `<img src="${imageUrl}" style="max-width: 50%; height: auto;" alt="Image">`;
+  this.newAnswer.content += `\n${imgTag}\n`;
+}
+,
     fetchQuestion() 
     {
       const questionId = this.$route.params.id;
@@ -128,6 +169,7 @@ export default {
         .get(`/questions/${questionId}/answers`)
         .then((response) => {
           this.answers = response.data.data;
+          console.log(this.answers)
           this.answers.forEach((answer) => {
             if (!answer.user.avatar) {
               answer.user.avatar = 'https://scott-gc.oss-cn-hangzhou.aliyuncs.com/img/202306041932702.png';
@@ -322,4 +364,32 @@ export default {
   border-radius: 4px;
   padding: 5px 10px;
 }
+.pagination-container {
+  text-align: center;
+  padding: 20px 0;
+  width: 100%;
+}
+
+.fixed-bottom {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+  margin-right: 300px; 
+}
+.no-results-alert {
+  margin-top: 10px;
+  width: 100%;
+  border-radius: 6px;
+  background-color: #f3f4f6;
+  color: #666;
+  text-align: center;
+  padding: 15px;
+  font-size: 16px;
+}
+.button-container {
+  display: flex;
+  justify-content: space-between;
+}
+
 </style>

@@ -55,6 +55,7 @@
   :on-success="handleUploadSuccess"
   :on-error="handleUploadError"
   :limit="3" 
+  :show-file-list="false"
 >
   <el-button size="small" type="primary">
     <i class="el-icon-upload"></i> 点击上传图片
@@ -75,13 +76,33 @@
   </el-dialog>
 </template>
 
-    <el-pagination
-      :current-page="currentPage"
-      :page-size="pageSize"
-      :total="questions.length"
-      @current-change="handlePageChange"
-      layout="prev, pager, next"
-    ></el-pagination>
+<el-pagination
+    v-if="filteredQuestions.length !== 0"
+    class="pagination-container"
+    :current-page="currentPage"
+    :page-size="pageSize"
+    :total="filteredQuestions.length"
+    @current-change="handlePageChange"
+  ></el-pagination>
+  <el-alert
+        v-else
+        title="没有找到相关问题"
+        type="info"
+        show-icon
+        class="no-results-alert"
+        :closable="false"
+      />
+
+  <div class="search-bar">
+    <el-input
+      v-model="searchKeyword"
+      class="search-input"
+      placeholder="搜索问题标题"
+      clearable
+      @input="handleSearchInput"
+      prefix-icon="el-icon-search"
+    ></el-input>
+  </div>
   </div>
 </template>
 
@@ -95,6 +116,8 @@ export default {
   },
   data() {
     return {
+      filteredQuestions: [],
+      searchKeyword: '',
       uploadUrl: 'http://localhost:9000/api/upload-image',
       questions: [
         {
@@ -106,8 +129,8 @@ export default {
           time: '',
           answers: '',
         },
-        // 其他问题对象...
       ],
+      totalDisplayedPages: 0, 
       currentPage: 1,
       pageSize: 5,
       dialogVisible: false,
@@ -119,12 +142,30 @@ export default {
   },
   computed: {
     displayedQuestions() {
-      const startIndex = (this.currentPage - 1) * this.pageSize;
-      const endIndex = startIndex + this.pageSize;
-      return this.questions.slice(startIndex, endIndex);
-    },
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    const filteredQuestions = this.filteredQuestions.slice(startIndex, endIndex);
+
+    this.totalDisplayedPages = Math.ceil(filteredQuestions.length / this.pageSize);
+
+    return filteredQuestions
+  },
   },
   methods: {
+    handleSearchInput() {
+    this.searchQuestions(); 
+  },
+  searchQuestions() {
+    if (this.searchKeyword.trim() === '') {
+      this.filteredQuestions=this.questions
+      this.currentPage = 1;
+    } else {
+      this.filteredQuestions = this.questions.filter(question => {
+        return question.title.toLowerCase().includes(this.searchKeyword.toLowerCase());
+      });
+      this.currentPage = 1;
+    }
+  },
     handleUploadSuccess(response) {
       if (response.data) {
         const imageUrl = response.data; // 从后端返回的图片URL
@@ -141,7 +182,6 @@ export default {
   // 插入图片并设置样式
   const imgTag = `<img src="${imageUrl}" style="max-width: 50%; height: auto;" alt="Image">`;
   this.newQuestion.description += `\n${imgTag}\n`;
-  console.log("AAZZZZZ")
 }
 ,
     navigateToAnswers(questionId) {
@@ -180,13 +220,13 @@ export default {
         .post('/submit-question', questionData)
         .then((response) => {
           // 提交成功的处理逻辑
-          console.log('问题提交成功:', response.data);
-
           // 刷新问题列表，重新获取问题数据
           this.$axios
             .get('/questions')
             .then((response) => {
               this.questions = response.data.data;
+              this.filteredQuestions=this.questions;
+              this.searchKeyword=''
               this.questions.forEach((question) => {
                 if (!question.avatar) {
                   question.avatar =
@@ -197,7 +237,6 @@ export default {
             .catch((error) => {
               console.error('获取问题列表失败:', error);
             });
-
           // 给出成功提示
           this.$message(response.data.msg);
         })
@@ -213,12 +252,12 @@ export default {
     },
   },
   created() {
-    // 组件加载时发送请求获取问题列表
     this.$axios
       .get('/questions')
       .then((response) => {
         this.questions = response.data.data;
-        // 设置默认头像
+        this.filteredQuestions=this.questions
+        this.totalDisplayedPages = Math.ceil(this.questions.length / this.pageSize);
         this.questions.forEach((question) => {
           if (!question.avatar) {
             question.avatar =
@@ -336,5 +375,35 @@ export default {
 
 .question-color-5 {
   background-color: #f0f0f5;
+}
+.search-bar {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  background-color: #fff; /* 修改背景颜色 */
+  border: 1px solid #ddd; /* 添加边框 */
+  border-radius: 25px;
+  padding: 0 15px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.pagination-container {
+  text-align: center;
+  padding: 20px 0;
+  width: 100%;
+}
+
+.no-results-alert {
+  margin-top: 10px;
+  width: 100%;
+  border-radius: 6px;
+  background-color: #f3f4f6;
+  color: #666;
+  text-align: center;
+  padding: 15px;
+  font-size: 16px;
 }
 </style>

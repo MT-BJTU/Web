@@ -5,7 +5,6 @@ import com.aliyuncs.ram.model.v20150501.ChangePasswordRequest;
 import mycom.bean.Answer;
 import mycom.bean.User;
 import mycom.model.QuestionRequestDto;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface Service {
