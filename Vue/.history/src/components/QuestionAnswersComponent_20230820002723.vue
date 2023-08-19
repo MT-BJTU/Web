@@ -235,8 +235,7 @@ export default {
         .post(`/answers/${answer.answerID}/like`)
         .then((response) => {
           console.log(response);
-          if ((response.data.code===200)) {
-
+          if ((response.data.code === 200)) {
             answer.likes++;
           } else {
             answer.likes--;
@@ -353,7 +352,8 @@ export default {
   border-radius: 4px;
   padding: 5px 10px;
 }
-
+<<<<<<< HEAD
+=======
 .pagination-container {
   text-align: center;
   padding: 20px 0;
@@ -381,8 +381,6 @@ export default {
   display: flex;
   justify-content: space-between;
 }
+>>>>>>> c513b6869ebeeb40db389b055674cc817c7f43b8
 
-.liked {
-  color: red;
-}
 </style>

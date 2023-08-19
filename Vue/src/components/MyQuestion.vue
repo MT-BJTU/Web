@@ -28,15 +28,24 @@
           </div>
         </div>
       </div>
-    </div>
-
-    <el-pagination
-      :current-page="currentPage"
-      :page-size="pageSize"
-      :total="questions.length"
-      @current-change="handlePageChange"
-      layout="prev, pager, next"
-    ></el-pagination>
+  </div>
+  <div class="pagination-space"></div>
+  <el-pagination
+    v-if="questions.length !== 0"
+    class="pagination-container"
+    :current-page="currentPage"
+    :page-size="pageSize"
+    :total="questions.length"
+    @current-change="handlePageChange"
+  ></el-pagination>
+  <el-alert
+        v-else
+        title="您还没提过问"
+        type="info"
+        show-icon
+        class="no-results-alert"
+        :closable="false"
+      />
   </div>
 </template>
 
@@ -231,4 +240,20 @@ export default {
 .el-badge .el-badge__content {
   display: none;
 }
+.pagination-container {
+  text-align: center;
+  padding: 20px 0;
+  width: 100%;
+}
+.no-results-alert {
+  margin-top: 10px;
+  width: 100%;
+  border-radius: 6px;
+  background-color: #f3f4f6;
+  color: #666;
+  text-align: center;
+  padding: 15px;
+  font-size: 16px;
+}
+
 </style>

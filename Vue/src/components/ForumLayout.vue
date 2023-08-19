@@ -13,7 +13,7 @@
           <el-menu-item index="1-1" @click="navigateTo('问题求助')">问题求助</el-menu-item>
           <el-menu-item index="1-2" @click="navigateTo('技术讨论')">技术讨论</el-menu-item>
         </el-submenu>
-        <el-submenu index="2">
+        <el-submenu v-if="userId != 0" index="2">
           <template slot="title">
             <i class="el-icon-user"></i>
             <span>个人中心</span>
@@ -41,6 +41,7 @@
 export default {
   data() {
     return {
+      userId:'',
       userAvatar: '',
       isSidebarHidden: false,
       isSidebarCollapsed: false
@@ -50,6 +51,8 @@ export default {
     this.$axios.get('/user/profile')
       .then(response => {
         const userData = response.data.data; // 假设响应以预期格式包含用户数据
+        this.userId=userData.userId
+        console.log(this.userId)
         if(userData.avatar==null){
           this.userAvatar = "https://scott-gc.oss-cn-hangzhou.aliyuncs.com/img/202306041932702.png";
         }else{

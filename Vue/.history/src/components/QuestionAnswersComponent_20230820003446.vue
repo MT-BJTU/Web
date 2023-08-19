@@ -235,8 +235,7 @@ export default {
         .post(`/answers/${answer.answerID}/like`)
         .then((response) => {
           console.log(response);
-          if ((response.data.code===200)) {
-
+          if ((response.data.msg == "点赞成功")) {
             answer.likes++;
           } else {
             answer.likes--;
@@ -382,7 +381,5 @@ export default {
   justify-content: space-between;
 }
 
-.liked {
-  color: red;
-}
+
 </style>

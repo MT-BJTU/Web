@@ -236,7 +236,6 @@ export default {
         .then((response) => {
           console.log(response);
           if ((response.data.code===200)) {
-
             answer.likes++;
           } else {
             answer.likes--;
@@ -382,7 +381,5 @@ export default {
   justify-content: space-between;
 }
 
-.liked {
-  color: red;
-}
+
 </style>

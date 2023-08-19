@@ -83,11 +83,9 @@ public class ServiceController {
     @PostMapping("/answers/{answerId}/like")
     public ResponseResult<?> likeAnswer(@PathVariable("answerId") Long answerId) {
         try {
-
-            service.likeAnswer(answerId);
             Long userId = getUserId();
             if(userId!=0){
-            return ResponseResult.success("Answer liked successfully");
+            return service.likeAnswer(answerId);
             }
             else
                 return new ResponseResult<>(500, "游客请登陆");

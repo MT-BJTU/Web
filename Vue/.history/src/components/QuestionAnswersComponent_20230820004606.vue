@@ -25,6 +25,15 @@
             <div class="like-section" >
               <el-badge :value="answer.likes" class="like-badge">
                 <el-button
+                  v-if="!liked"
+                  type="text"
+                  @click="likeAnswer(answer)"
+                >
+                  点赞
+                </el-button>
+                <el-button
+                  v-if="liked"
+                  class="liked"
                   type="text"
                   @click="likeAnswer(answer)"
                 >
@@ -116,6 +125,7 @@ export default {
       answer:{
         likes:0,
       },
+      liked:false,
       showAnswerForm: false,
       newAnswer: {
         content: ''
