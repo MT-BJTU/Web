@@ -314,7 +314,7 @@ public class ServiceImpl implements Service {
         }
     }
     @Override
-    public void likeAnswer(Long answerId) {
+    public ResponseResult<?> likeAnswer(Long answerId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Long userId = null;
         if (authentication != null && authentication.getPrincipal() instanceof DetailedUser) {
@@ -323,44 +323,25 @@ public class ServiceImpl implements Service {
         }
         // Check if the user has already liked the answer
         LikeRecord existingLike = likeRecordMapper.selectById(answerId);
-        System.out.println(existingLike+" jia");
-        if (existingLike == null) {
-            // Create a new like record
-            LikeRecord likeRecord = new LikeRecord(answerId, userId);
-            likeRecordMapper.insert(likeRecord);
-
-            // Update the likes count in the Answer table
-            Answer answer = answerMapper.selectById(answerId);
-            if (answer != null) {
-                answer.setLikes(answer.getLikes() + 1);
-                answerMapper.updateById(answer);
+        System.out.println(existingLike);
+        try {
+            if (existingLike == null) {
+                LikeRecord likeRecord = new LikeRecord(answerId, userId);
+                likeRecordMapper.insert(likeRecord);
+                return new ResponseResult<>(200, "点赞成功");
             }
+            else{
+                likeRecordMapper.deleteById(answerId);
+                System.out.println(existingLike);
+                System.out.println("behind");
+                return new ResponseResult<>(500, "取消点赞");
+            }
+        } catch (Exception e) {
+            return new ResponseResult<>(500, "操作失败");
         }
+
     }
 
-    @Override
-    public void unlikeAnswer(Long answerId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = null;
-        if (authentication != null && authentication.getPrincipal() instanceof DetailedUser) {
-            DetailedUser detailedUser = (DetailedUser) authentication.getPrincipal();
-            userId = detailedUser.getUserId();
-        }
-        // Check if the user has liked the answer
-        LikeRecord existingLike = likeRecordMapper.selectById(answerId);
-        System.out.println(existingLike+" jian");
-        if (existingLike != null && existingLike.getUserID().equals(userId)) {
-            // Delete the like record
-            likeRecordMapper.deleteById(answerId);
-
-            // Update the likes count in the Answer table
-            Answer answer = answerMapper.selectById(answerId);
-            if (answer != null) {
-                answer.setLikes(answer.getLikes() - 1);
-                answerMapper.updateById(answer);
-            }
-        }
-    }
     @Override
     public ResponseResult<String> uploadImage(MultipartFile file){
         if (file.isEmpty()) {

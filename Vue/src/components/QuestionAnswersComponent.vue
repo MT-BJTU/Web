@@ -22,13 +22,16 @@
           <markdown-collapse :content="answer.content" />
           <div class="answer-info">
             <span class="answer-time">{{ answer.releaseTime }}</span>
-            <button
-              class="like-button"
-              :class="{ liked: answer.liked }"
-              @click="toggleLike(answer)"
-            >
-              👍 {{ answer.likes }}
-            </button>
+            <div class="like-section" >
+              <el-badge :value="answer.likes" class="like-badge">
+                <el-button
+                  type="text"
+                  @click="likeAnswer(answer)"
+                >
+                  点赞
+                </el-button>
+              </el-badge>
+              </div>
           </div>
         </div>
       </div>
@@ -87,6 +90,9 @@ export default {
         description: '',
       },
       answers: [],
+      answer:{
+        likes:0,
+      },
       showAnswerForm: false,
       newAnswer: {
         content: ''
@@ -132,6 +138,7 @@ export default {
             if (!answer.user.avatar) {
               answer.user.avatar = 'https://scott-gc.oss-cn-hangzhou.aliyuncs.com/img/202306041932702.png';
             }
+            this.answer.likes=answer.likes;
           });
         })
         .catch((error) => {
@@ -181,45 +188,26 @@ export default {
           this.$message.error('回答提交失败');
         });
     },
-    toggleLike(answer) {
-    if (answer.liked) {
-      this.unlikeAnswer(answer);
-    } else {
-      this.likeAnswer(answer);
-    }
-  },
-  likeAnswer(answer) {
-    // Send a request to your server to record the like action
-    this.$axios
-      .post(`/answers/${answer.answerID}/like`)
-      .then((response) => {
-        if(response.data.code===500)
-        this.$message(response.data.msg);
-      else{
-        answer.liked = true;
-        answer.likes++;
-        }
-      })
-      .catch((error) => {
-        console.error('Failed to like answer:', error);
-      });
-  },
-  unlikeAnswer(answer) {
-    // Send a request to your server to record the unlike action
-    this.$axios
-      .post(`/answers/${answer.answerID}/unlike`)
-      .then((response) => {
-        if(response.data.code===500)
-        this.$message(response.data.msg);
-      else{
-        answer.liked = false;
-        answer.likes--;
-      }
-      })
-      .catch((error) => {
-        console.error('Failed to unlike answer:', error);
-      });
-  },
+    likeAnswer(answer) {
+      this.$axios
+        .post(`/answers/${answer.answerID}/like`)
+        .then((response) => {
+          console.log(response);
+          if ((response.data.code === 200)) {
+            answer.likes++;
+          } else {
+            answer.likes--;
+          }
+          this.answers.forEach((answer_old, index) => {
+              if (answer_old.answerID === answer.answerID) {
+                this.answers[index].likes = answer.likes;
+              }
+            });
+        })
+        .catch((error) => {
+          console.error('Failed to like answer:', error);
+        });
+    },
   },
 };
 </script>
@@ -322,4 +310,5 @@ export default {
   border-radius: 4px;
   padding: 5px 10px;
 }
+
 </style>

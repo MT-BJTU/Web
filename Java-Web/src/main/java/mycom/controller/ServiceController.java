@@ -96,20 +96,6 @@ public class ServiceController {
         }
     }
 
-    @PostMapping("/answers/{answerId}/unlike")
-    public ResponseResult<?> unlikeAnswer(@PathVariable("answerId") Long answerId) {
-        try {
-            service.unlikeAnswer(answerId);
-            Long userId = getUserId();
-            if(userId!=0){
-            return ResponseResult.success("Answer unliked successfully");
-            }
-            else
-                return new ResponseResult<>(500, "游客请登陆");
-        } catch (Exception e) {
-            return ResponseResult.error();
-        }
-    }
     private Long getUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof DetailedUser) {
