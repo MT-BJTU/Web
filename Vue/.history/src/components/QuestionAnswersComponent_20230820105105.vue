@@ -28,7 +28,6 @@
                 v-if="answer.liked"
                 icon="el-icon-thumb"
                   type="text"
-                  class="liked"
                   @click="likeAnswer(answer)"
                 >
                 </el-button>
@@ -36,7 +35,7 @@
                 v-else
                 icon="el-icon-thumb"
                   type="text"
-
+                  class="liked"
                   @click="likeAnswer(answer)"
                 >
                 </el-button>

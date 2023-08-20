@@ -25,7 +25,7 @@
           <div class="answer-actions-left">
             <el-badge :value="answer.likes" class="like-badge">
                 <el-button
-                v-if="answer.liked"
+                v-if="!answer.liked"
                 icon="el-icon-thumb"
                   type="text"
                   class="liked"

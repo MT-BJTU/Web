@@ -25,20 +25,12 @@
           <div class="answer-actions-left">
             <el-badge :value="answer.likes" class="like-badge">
                 <el-button
-                v-if="answer.liked"
                 icon="el-icon-thumb"
                   type="text"
-                  class="liked"
                   @click="likeAnswer(answer)"
                 >
-                </el-button>
-                <el-button
-                v-else
-                icon="el-icon-thumb"
-                  type="text"
-
-                  @click="likeAnswer(answer)"
-                >
+                 <p v-if="answer.liked">点赞</p>
+                 <p v-else>不点赞</p>
                 </el-button>
               </el-badge>
           </div> 

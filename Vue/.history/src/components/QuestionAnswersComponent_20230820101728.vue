@@ -25,18 +25,8 @@
           <div class="answer-actions-left">
             <el-badge :value="answer.likes" class="like-badge">
                 <el-button
-                v-if="answer.liked"
                 icon="el-icon-thumb"
                   type="text"
-                  class="liked"
-                  @click="likeAnswer(answer)"
-                >
-                </el-button>
-                <el-button
-                v-else
-                icon="el-icon-thumb"
-                  type="text"
-
                   @click="likeAnswer(answer)"
                 >
                 </el-button>
@@ -159,10 +149,6 @@ export default {
       .catch(error => {
         console.error('获取用户信息失败', error);
       });
-      this.answers.forEach((answer) => {
-        this.likeAnswer(this.answers)
-          });
-
   },
   methods: {
     deleteAnswer(answerID) {
