@@ -127,7 +127,6 @@
         this.$axios
           .delete(`/articles/${essayID}`)
           .then((response) => {
-            console.log(response.data)
             this.articles = this.articles.filter((article) => article.essayID !== essayID);
             this.$message.success('文章删除成功！');
           })

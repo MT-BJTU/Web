@@ -24,8 +24,9 @@
               <el-button
                 type="text" @click.stop="toggleFollowQuestion(question)"
               >
-            <i class="el-icon-star-off" v-if="!question.follower"></i>
-            <i class="el-icon-star-on" v-else></i>
+              <div>
+                  <i :class="{'el-icon-view': true, 'blue-color': !question.follower, 'red-color': question.follower}"></i>
+               </div>
               </el-button>
             </el-badge>
             <span class="follow-count">{{ question.followCount }} 关注</span>
@@ -282,7 +283,11 @@ export default {
   color: #666;
   margin-left: 5px;
 }
-.el-icon-star-on {
-  color: #f9a825; 
+.blue-color {
+  color: blue;
+}
+
+.red-color {
+  color: red; 
 }
 </style>

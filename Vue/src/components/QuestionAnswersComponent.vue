@@ -23,7 +23,7 @@
         </div>
         <div class="answer-actions">
           <div class="answer-actions-left">
-            <el-badge :value="answer.likes" class="like-badge">
+            <el-badge class="like-badge">
                 <el-button
                 v-if="answer.liked"
                 icon="el-icon-thumb"
@@ -41,10 +41,11 @@
                 >
                 </el-button>
               </el-badge>
+              <span class="like-count">{{ answer.likes }} 点赞</span>
           </div> 
           <div class="answer-actions-right">
             <span class="answer-time">发布时间: {{ answer.releaseTime }}</span>
-            <i v-if="answer.userID===userId"  class="el-icon-delete delete-icon" @click.stop="deleteAnswer(answer.answerID)"></i>
+            <i v-if="answer.userID===userId||userId===1"  class="el-icon-delete delete-icon" @click.stop="deleteAnswer(answer.answerID)"></i>
           </div>
         </div>
       </div>
@@ -444,4 +445,10 @@ export default {
   display: flex;
   align-items: center;
 }
+.like-count {
+  font-size: 14px;
+  color: #666;
+  margin-left: 5px;
+}
+
 </style>

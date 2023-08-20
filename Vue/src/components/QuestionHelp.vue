@@ -27,20 +27,22 @@
               <el-button
                 type="text" @click.stop="toggleFollowQuestion(question)"
               >
-            <i class="el-icon-star-off" v-if="!question.follower"></i>
-            <i class="el-icon-star-on" v-else></i>
+              <div>
+                  <i :class="{'el-icon-view': true, 'blue-color': !question.follower, 'red-color': question.follower}"></i>
+               </div>
               </el-button>
             </el-badge>
             <span class="follow-count">{{ question.followCount }} 关注</span>
           </div>
           <div class="question-actions-right">
             <span class="question-time">发布时间: {{ question.time }}</span>
+            <i v-if="question.userID===userId||userId===1" class="el-icon-delete delete-icon" @click.stop="deleteQuestion(question.questionId)"></i>
           </div>
         </div>
       </div>
     </el-card>
 
-    <el-button type="primary" @click="showQuestionDialog" class="ask-button">我要提问</el-button>
+    <el-button type="primary" @click="showQuestionDialog" class="ask-button">提问</el-button>
     <template>
   <el-dialog
     title="提出问题"
@@ -139,6 +141,7 @@ export default {
           follower: false
         },
       ],
+      userID:'',
       totalDisplayedPages: 0, 
       currentPage: 1,
       pageSize: 5,
@@ -163,6 +166,19 @@ export default {
 
   },
   methods: {
+    deleteQuestion(questionId) {
+      this.$axios
+        .delete(`/questions/${questionId}`)
+        .then((response) => {
+          this.questions = this.questions.filter((question) => question.questionId !== questionId);
+          this.filteredQuestions = this.filteredQuestions.filter((question) => question.questionId !== questionId);
+          this.$message.success('问题删除成功！');
+        })
+        .catch((error) => {
+          console.error('删除问题失败:', error);
+          this.$message.error('问题删除失败！');
+        });
+    },
     toggleFollowQuestion(question) {
       this.$axios
         .post('/follow-question', question)
@@ -276,6 +292,13 @@ export default {
     },
   },
   created() {
+    this.$axios.get('/getuserId')
+      .then(response => {
+        this.userId=response.data;
+      })
+      .catch(error => {
+        console.error('获取用户信息失败', error);
+      });
     this.$axios
       .get('/questions')
       .then((response) => {
@@ -437,7 +460,17 @@ export default {
 }
 
 
-.el-icon-star-on {
-  color: #f9a825; 
+.blue-color {
+  color: blue;
+}
+
+.red-color {
+  color: red; 
+}
+
+.delete-icon {
+  color: red;
+  font-size: 18px;
+  cursor: pointer;
 }
 </style>

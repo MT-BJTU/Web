@@ -30,6 +30,7 @@
             </div> 
             <div class="article-actions-right">
               <span class="article-time">发布时间: {{ article.releaseTime }}</span>
+              <i v-if="article.userID===userId||userId===1" class="el-icon-delete delete-icon" @click.stop="deletearticle(article.essayID)"></i>
             </div>
           </div>
         </div>
@@ -76,8 +77,9 @@
           stared: false
         },
       ],
-          currentPage: 1,
-          pageSize: 5,
+      userId:'',
+      currentPage: 1,
+      pageSize: 5,
         };
       },
       computed: {
@@ -88,6 +90,18 @@
       },
       },
       methods: {
+        deletearticle(essayID) {
+        this.$axios
+          .delete(`/articles/${essayID}`)
+          .then((response) => {
+            this.articles = this.articles.filter((article) => article.essayID !== essayID);
+            this.$message.success('文章删除成功！');
+          })
+          .catch((error) => {
+            console.error('删除文章失败:', error);
+            this.$message.error('文章删除失败！');
+          });
+      },
         toggleStarArticle(articleToUnfollow) {
           this.$axios
     .post('/star-article', articleToUnfollow)
@@ -118,6 +132,13 @@
       },
       },
       created() {
+        this.$axios.get('/getuserId')
+      .then(response => {
+        this.userId=response.data;
+      })
+      .catch(error => {
+        console.error('获取用户信息失败', error);
+      });
         this.$axios
           .get('/mystar')
           .then((response) => {
@@ -248,5 +269,10 @@
     .el-icon-star-on {
       color: #f9a825; 
     }
+    .delete-icon {
+  color: red;
+  font-size: 18px;
+  cursor: pointer;
+}
     </style>
     

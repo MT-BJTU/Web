@@ -2,7 +2,7 @@
   <div class="login">
     <div class="login__card">
       <h2 class="login__title">用户登录</h2>
-      <el-form ref="loginForm" :model="loginForm" label-width="80px" class="login__form">
+      <el-form ref="loginForm" :model="loginForm" label-width="80px" class="login__form" @keyup.enter.native="login">
         <el-form-item label="用户名" prop="userName">
           <el-input v-model="loginForm.userName" placeholder="请输入用户名"></el-input>
         </el-form-item>
@@ -38,6 +38,7 @@ export default {
         if (this.loginForm.userName === '' || this.loginForm.password === '') {
           this.$message('账号或密码不能为空');
         }
+        else{
         if (valid) {
           this.loginLoading = true;
           // 发送登录请求
@@ -62,6 +63,7 @@ export default {
           console.log('表单验证失败');
           return false;
         }
+      }
       });
     },
     doRegister() {
