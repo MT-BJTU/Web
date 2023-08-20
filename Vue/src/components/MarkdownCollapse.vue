@@ -23,8 +23,8 @@ export default {
   },
   data() {
     return {
+      show:'',
       expanded: false,
-      show:''
     };
   },
   computed: {
@@ -35,16 +35,15 @@ export default {
         this.show=true
         const maxTextLength = 100; 
         let textToDisplay = this.content; 
-        let length=this.content.length
         if (textToDisplay.length > maxTextLength) {
           const lastImageTagIndex = this.content.lastIndexOf('<img', maxTextLength); 
           if (lastImageTagIndex !== -1) {
-            const firstIndex=this.content.indexOf('>',maxTextLength+1);  
-            if(firstIndex+2===length){
-              this.show=false;
-              return this.content
-            }
+            const firstIndex=this.content.indexOf('>',maxTextLength)+1;
             textToDisplay = this.content.substring(0, firstIndex); 
+            if (this.content.trim() == textToDisplay.trim()){
+                this.show=false
+                return textToDisplay
+            }
           } else {
             textToDisplay = textToDisplay.substr(0, maxTextLength); 
           }

@@ -24,22 +24,13 @@
         <div class="answer-actions">
           <div class="answer-actions-left">
             <el-badge class="like-badge">
-                <el-button
-                v-if="answer.liked"
-                icon="el-icon-thumb"
-                  type="text"
-                  class="liked"
-                  @click="likeAnswer(answer)"
-                >
-                </el-button>
-                <el-button
-                v-else
-                icon="el-icon-thumb"
-                  type="text"
-
-                  @click="likeAnswer(answer)"
-                >
-                </el-button>
+              <el-button
+                type="text" @click.stop="likeAnswer(answer)"
+              >
+              <div>
+                  <i :class="{'el-icon-thumb': true, 'blue-color': !answer.liked, 'red-color': answer.liked}"></i>
+               </div>
+              </el-button>
               </el-badge>
               <span class="like-count">{{ answer.likes }} 点赞</span>
           </div> 
@@ -420,9 +411,6 @@ export default {
   justify-content: space-between;
 }
 
-.liked {
-  color: red;
-}
 .answer-time {
   font-size: 14px;
   color: #666;
@@ -445,6 +433,13 @@ export default {
   font-size: 14px;
   color: #666;
   margin-left: 5px;
+}
+.blue-color {
+  color: blue;
+}
+
+.red-color {
+  color: red; 
 }
 
 </style>
