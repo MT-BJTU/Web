@@ -1,10 +1,7 @@
 package mycom.controller;
 import mycom.ActionResult.ResponseResult;
 import com.aliyuncs.ram.model.v20150501.ChangePasswordRequest;
-import mycom.bean.Answer;
-import mycom.bean.LikeRecord;
-import mycom.bean.Question;
-import mycom.bean.User;
+import mycom.bean.*;
 import mycom.mapper.AnswerMapper;
 import mycom.model.DetailedUser;
 import mycom.model.QuestionRequestDto;
@@ -86,7 +83,7 @@ public class ServiceController {
         try {
             Long userId = getUserId();
             if(userId!=0){
-            return service.likeAnswer(answerId);
+                return service.likeAnswer(answerId);
             }
             else
                 return new ResponseResult<>(500, "游客请登陆");
@@ -94,8 +91,8 @@ public class ServiceController {
             return ResponseResult.error();
         }
     }
-
-    private Long getUserId() {
+    @GetMapping("/getuserId")
+    public Long getUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof DetailedUser) {
             DetailedUser detailedUser = (DetailedUser) authentication.getPrincipal();
@@ -116,5 +113,38 @@ public class ServiceController {
     @GetMapping("/myfollower")
     public ResponseResult<?> myfollow() {
         return service.myfollow();
+    }
+
+    @GetMapping("/articles")
+    ResponseResult<?>showArticles(){
+        return service.showArticles();
+    }
+
+    @PostMapping("/submit-article")
+    public ResponseResult<?> submitArticle(@RequestBody Article article) {
+        return service.saveArticle(article);
+    }
+
+    @PostMapping("/star-article")
+    public ResponseResult<?> star(@RequestBody Article article) {
+        return service.star(article);
+    }
+
+    @GetMapping("/myarticles")
+    ResponseResult<?>showEssay(){
+        return service.showMyEssay();
+    }
+
+    @DeleteMapping("/articles/{essayId}")
+    public ResponseResult<?> deleteArticle(@PathVariable("essayId") Long essayId) {
+        return service.deleteArticle(essayId);
+    }
+    @GetMapping("/mystar")
+    ResponseResult<?>showStar(){
+        return service.showStar();
+    }
+    @DeleteMapping("/answers/{answerID}")
+    public ResponseResult<?> deleteAnswer(@PathVariable("answerID") Long answerID) {
+        return service.deleteAnswer(answerID);
     }
 }

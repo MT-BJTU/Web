@@ -82,9 +82,9 @@ export default {
       } else if (page === '我的问题') {
         this.$router.push('/myQuestions');
       } else if (page === '我的收藏') {
-        this.$router.push('/my-collect');
+        this.$router.push('/myStars');
       } else if (page === '我的文章') {
-        this.$router.push('/my-articles');
+        this.$router.push('/myArticles');
       } else if (page === '个人设置') {
         this.$router.push('/profileSettings');
       }

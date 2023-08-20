@@ -3,6 +3,7 @@ package mycom.service;
 import mycom.ActionResult.ResponseResult;
 import com.aliyuncs.ram.model.v20150501.ChangePasswordRequest;
 import mycom.bean.Answer;
+import mycom.bean.Article;
 import mycom.bean.Question;
 import mycom.bean.User;
 import mycom.model.QuestionRequestDto;
@@ -35,4 +36,18 @@ public interface Service {
     ResponseResult<?> follow(Question question);
 
     ResponseResult<?> myfollow();
+
+    ResponseResult<?> showArticles();
+
+    ResponseResult<?> saveArticle(Article article);
+
+    ResponseResult<?> star(Article article);
+
+    ResponseResult<?> showMyEssay();
+
+    ResponseResult<?> deleteArticle(Long essayId);
+
+    ResponseResult<?> showStar();
+
+    ResponseResult<?> deleteAnswer(Long answerID);
 }

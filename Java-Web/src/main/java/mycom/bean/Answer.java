@@ -33,7 +33,8 @@ public class Answer  {
 
     @TableField(value = "Likes")
     private int likes;
-
+    @TableField(exist = false)
+    private boolean liked;
     @TableField(exist = false)
     private User user;
 }

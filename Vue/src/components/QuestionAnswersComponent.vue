@@ -20,18 +20,22 @@
         </div>
         <div class="answer-content">
           <markdown-collapse :content="answer.content" />
-          <div class="answer-info">
-            <span class="answer-time">{{ answer.releaseTime }}</span>
-            <div class="like-section" >
-              <el-badge :value="answer.likes" class="like-badge">
+        </div>
+        <div class="answer-actions">
+          <div class="answer-actions-left">
+            <el-badge :value="answer.likes" class="like-badge">
                 <el-button
                   type="text"
                   @click="likeAnswer(answer)"
                 >
-                  点赞
+                 <p v-if="answer.liked">点赞</p>
+                 <p v-else>不点赞</p>
                 </el-button>
               </el-badge>
-              </div>
+          </div> 
+          <div class="answer-actions-right">
+            <span class="answer-time">发布时间: {{ answer.releaseTime }}</span>
+            <i v-if="answer.userID===userId"  class="el-icon-delete delete-icon" @click.stop="deleteAnswer(answer.answerID)"></i>
           </div>
         </div>
       </div>
@@ -111,10 +115,13 @@ export default {
         time: '',
         description: '',
       },
-      answers: [],
-      answer:{
-        likes:0,
-      },
+      answers: [
+        {
+          like:'',
+          liked:false
+        }
+      ],
+      userId:'',
       showAnswerForm: false,
       newAnswer: {
         content: ''
@@ -134,7 +141,28 @@ export default {
     this.fetchQuestion();
     this.fetchAnswers();
   },
+  created() {
+    this.$axios.get('/getuserId')
+      .then(response => {
+        this.userId=response.data;
+      })
+      .catch(error => {
+        console.error('获取用户信息失败', error);
+      });
+  },
   methods: {
+    deleteAnswer(answerID) {
+      this.$axios
+        .delete(`/answers/${answerID}`)
+        .then((response) => {
+          this.answers = this.answers.filter((answer) => answer.answerID !== answerID);
+          this.$message.success('回答删除成功！');
+        })
+        .catch((error) => {
+          console.error('回答问题失败:', error);
+          this.$message.error('回答删除失败！');
+        });
+    },
     handleUploadSuccess(response) {
       if (response.data) {
         const imageUrl = response.data; // 从后端返回的图片URL
@@ -174,12 +202,10 @@ export default {
         .get(`/questions/${questionId}/answers`)
         .then((response) => {
           this.answers = response.data.data;
-          console.log(this.answers)
           this.answers.forEach((answer) => {
             if (!answer.user.avatar) {
               answer.user.avatar = 'https://scott-gc.oss-cn-hangzhou.aliyuncs.com/img/202306041932702.png';
             }
-            this.answer.likes=answer.likes;
           });
         })
         .catch((error) => {
@@ -222,7 +248,7 @@ export default {
         .then((response) => {
           this.showAnswerForm = false;
           this.$message(response.data.msg);
-          this.fetchAnswers(); // Fetch updated answers after submitting
+          this.fetchAnswers(); 
         })
         .catch((error) => {
           console.error('Failed to submit answer:', error);
@@ -233,18 +259,20 @@ export default {
       this.$axios
         .post(`/answers/${answer.answerID}/like`)
         .then((response) => {
-          console.log(response);
-          if ((response.data.code===200)) {
-
+          this.$message({
+          message: response.data.msg,
+          type: 'success',
+          duration: 800,
+          });
+          if(response.data.code!==500){
+          if (response.data.code===200) {
             answer.likes++;
-          } else {
+          } else if(response.data.code===201){
             answer.likes--;
           }
-          this.answers.forEach((answer_old, index) => {
-              if (answer_old.answerID === answer.answerID) {
-                this.answers[index].likes = answer.likes;
-              }
-            });
+            this.$set(answer, 'liked', !answer.liked);
+            this.$forceUpdate()
+        }
         })
         .catch((error) => {
           console.error('Failed to like answer:', error);
@@ -383,5 +411,23 @@ export default {
 
 .liked {
   color: red;
+}
+.answer-time {
+  font-size: 14px;
+  color: #666;
+}
+.delete-icon {
+  color: red;
+  font-size: 18px;
+  cursor: pointer;
+}
+.answer-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.answer-actions-left {
+  display: flex;
+  align-items: center;
 }
 </style>

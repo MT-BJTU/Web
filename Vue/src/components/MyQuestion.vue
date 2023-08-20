@@ -94,7 +94,11 @@ export default {
       this.$axios
         .post('/follow-question', question)
         .then((response) => {
-            this.$message(response.data.msg)
+          this.$message({
+          message: response.data.msg,
+          type: 'success',
+          duration: 800,
+          });
             if(response.data.code!==500){
               if(response.data.code===200)
                 question.followCount++;

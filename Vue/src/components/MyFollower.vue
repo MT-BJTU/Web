@@ -94,7 +94,11 @@
     .post('/follow-question', questionToUnfollow)
     .then((response) => {
       this.questions = this.questions.filter((question) => question.questionId !== questionToUnfollow.questionId);
-      this.$message.success("取消关注成功")
+      this.$message({
+          message: "取消关注成功",
+          type: 'success',
+          duration: 800,
+          });
     })
     .catch((error) => {
       this.$message.error('网络故障！');
@@ -122,7 +126,6 @@
         .get('/myfollower')
         .then((response) => {
           this.questions = response.data.data;
-          console.log(this.questions)
           this.questions.forEach((question) => {
             if (!question.avatar) {
               question.avatar =

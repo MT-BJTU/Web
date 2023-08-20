@@ -10,6 +10,8 @@ import QuestionAnswersComponent from '@/components/QuestionAnswersComponent.vue'
 import MyQuestion from '@/components/MyQuestion.vue'
 import TechDiscussion from '@/components/Articles.vue'
 import MyFollower from '@/components/MyFollower.vue'
+import MyArticle from '@/components/MyArticle.vue'
+import MyStar from '@/components/MyStar.vue'
 Vue.use(Router)
 
 const router = new Router({
@@ -34,24 +36,16 @@ const router = new Router({
           name: 'techDiscussion',
           component: TechDiscussion
         },
-        /*
         {
-          path: 'ResourceShare',
-          name: 'ResourceShare',
-          component: ResourceShare
-        },
-        
-  
-        {
-          path: 'MyAnswers',
-          name: 'MyAnswers',
-          component: MyAnswers
+          path: 'myStars',
+          name: 'myStars',
+          component: MyStar
         },
         {
-          path: 'MyArticles',
-          name: 'MyArticles',
-          component: MyArticles
-        },*/
+          path: 'myArticles',
+          name: 'myArticles',
+          component: MyArticle
+        },
         {
           path: 'myQuestions',
           name: 'myQuestions',
