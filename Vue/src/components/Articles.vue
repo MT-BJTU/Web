@@ -296,7 +296,6 @@ export default {
       .get('/articles')
       .then((response) => {
         this.Articles = response.data.data;
-        console.log(this.Articles)
         this.filteredArticles=this.Articles
         this.totalDisplayedPages = Math.ceil(this.Articles.length / this.pageSize);
         this.Articles.forEach((article) => {

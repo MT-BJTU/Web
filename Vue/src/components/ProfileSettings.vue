@@ -114,7 +114,6 @@ export default {
       const reader = new FileReader();
       reader.onload = (e) => {
         this.avatar = e.target.result;
-        console.log(this.avatar)
       };
       reader.readAsDataURL(file);
       this.closeAvatarModal();
