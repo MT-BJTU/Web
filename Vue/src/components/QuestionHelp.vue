@@ -127,7 +127,7 @@ export default {
     return {
       filteredQuestions: [],
       searchKeyword: '',
-      uploadUrl: 'http://localhost:9000/api/upload-image',
+      uploadUrl: 'http://8.130.76.6:9000/api/upload-image',
       questions: [
         {
           questionId: '',

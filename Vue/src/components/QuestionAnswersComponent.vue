@@ -115,7 +115,7 @@ export default {
   },
   data() {
     return {
-      uploadUrl: 'http://localhost:9000/api/upload-image',
+      uploadUrl: 'http://8.130.76.6:9000/api/upload-image',
       question: {
         id: null,
         title: '',
@@ -160,10 +160,6 @@ export default {
       .catch(error => {
         console.error('获取用户信息失败', error);
       });
-      this.answers.forEach((answer) => {
-        this.likeAnswer(this.answers)
-          });
-
   },
   methods: {
     deleteAnswer(answerID) {

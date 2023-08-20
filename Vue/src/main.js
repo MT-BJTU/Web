@@ -9,7 +9,7 @@ import VueMarkdown from 'vue-markdown';
 
 Vue.component('vue-markdown', VueMarkdown);
 var axios = require('axios')
-axios.defaults.baseURL = 'http://localhost:9000/api'
+axios.defaults.baseURL = 'http://8.130.76.6:9000/api'
 // 绑定到全局
 Vue.prototype.$axios = axios
 

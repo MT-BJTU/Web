@@ -14,7 +14,7 @@ import java.util.UUID;
 public class JwtUtil {
 
 
-    public static final Long JWT_TTL = 30*24*60*60*1000L;
+    public static final Long JWT_TTL = 24*60*60*1000L;
 
     // 设置秘钥明文
     public static final String JWT_KEY = "gc";

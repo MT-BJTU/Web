@@ -24,6 +24,7 @@ export default {
   data() {
     return {
       expanded: false,
+      show:''
     };
   },
   computed: {
@@ -31,12 +32,18 @@ export default {
       if (this.expanded) {
         return this.content;
       } else {
+        this.show=true
         const maxTextLength = 100; 
         let textToDisplay = this.content; 
+        let length=this.content.length
         if (textToDisplay.length > maxTextLength) {
           const lastImageTagIndex = this.content.lastIndexOf('<img', maxTextLength); 
           if (lastImageTagIndex !== -1) {
-            const firstIndex=this.content.indexOf('>',maxTextLength)+1;
+            const firstIndex=this.content.indexOf('>',maxTextLength+1);  
+            if(firstIndex+2===length){
+              this.show=false;
+              return this.content
+            }
             textToDisplay = this.content.substring(0, firstIndex); 
           } else {
             textToDisplay = textToDisplay.substr(0, maxTextLength); 
@@ -50,7 +57,7 @@ export default {
   },
   methods: {
     shouldShowExpandButton() {
-      return this.content.length > 100;
+      return this.content.length > 100&&this.show;
     },
     toggleExpanded() {
       this.expanded = !this.expanded;
